@@ -1,0 +1,25 @@
+﻿{
+  "name": "@izipizi/admin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3005",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@izipizi/db": "workspace:*",
+    "@izipizi/auth": "workspace:*",
+    "@izipizi/ui": "workspace:*",
+    "next": "^15.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@izipizi/config": "workspace:*",
+    "typescript": "^5.7.0",
+    "@types/react": "^19.0.0",
+    "@types/node": "^22.0.0"
+  }
+}

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <title>Apstiprini reģistrāciju</title>
+</head>
+<body style="margin:0;padding:32px 16px;background:#f6f7f8;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#192635;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+    <tr>
+      <td style="background:linear-gradient(135deg,#192635 0%,#1e3048 50%,#2a1f3d 100%);padding:28px 28px 24px;text-align:center;">
+        <img src="https://tirgus.izipizi.lv/izipizi-logo.png" alt="izipizi.lv" width="56" height="56" style="display:block;margin:0 auto 10px;width:56px;height:56px;border-radius:14px;" />
+        <span style="font-size:18px;font-weight:800;color:#ffffff;letter-spacing:-0.01em;">tirgus.izipizi.lv</span>
+        <div style="margin:14px auto 0;width:60px;height:3px;border-radius:2px;background:linear-gradient(90deg,#53F3A4,#AD47FF);"></div>
+      </td>
+    </tr>
+
+    {{ if eq .Data.role "seller" }}
+    <!-- ============================================ -->
+    <!-- SELLER (RAŽOTĀJS) variant                    -->
+    <!-- ============================================ -->
+    <tr>
+      <td style="padding:32px 28px 8px;">
+        <span style="display:inline-block;background:#192635;color:#53F3A4;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">
+          Ražotāja konts
+        </span>
+        <h1 style="margin:12px 0 12px 0;font-size:22px;font-weight:800;color:#192635;line-height:1.3;">
+          Apstiprini ražotāja kontu
+        </h1>
+        <p style="margin:0 0 8px 0;font-size:15px;line-height:1.6;color:#444;">
+          Sveiks!
+        </p>
+        <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#444;">
+          Tu pieteicies kā <strong>ražotājs</strong> vietnē <strong>tirgus.izipizi.lv</strong>.
+          Apstiprini savu e-pasta adresi, lai pabeigtu reģistrāciju un sāktu izvietot savus produktus
+          Latvijas pakomātu tīklā:
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" style="padding:8px 28px 24px;">
+        <a href="{{ .ConfirmationURL }}"
+           style="display:inline-block;background:#192635;color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:14px 32px;border-radius:12px;letter-spacing:-0.01em;">
+          Apstiprināt e-pastu
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0 28px 8px;">
+        <p style="margin:0 0 12px 0;font-size:13px;line-height:1.6;color:#666;font-weight:600;">
+          Pēc apstiprināšanas:
+        </p>
+        <ul style="margin:0 0 20px 0;padding:0 0 0 20px;font-size:13px;line-height:1.8;color:#555;">
+          <li>Aizpildi saimniecības profilu (nosaukums, apraksts, foto)</li>
+          <li>Norādi nodošanas vietu (pakomāts vai kurjera adrese)</li>
+          <li>Pievieno juridisko info (PVN, IBAN — vajag rēķiniem)</li>
+          <li>Gaidi mūsu apstiprinājumu — līdz 24 stundām</li>
+        </ul>
+      </td>
+    </tr>
+    {{ else }}
+    <!-- ============================================ -->
+    <!-- BUYER (PIRCĒJS) variant — default            -->
+    <!-- ============================================ -->
+    <tr>
+      <td style="padding:32px 28px 8px;">
+        <span style="display:inline-block;background:#e7faf0;color:#0e7a4a;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;">
+          Pircēja konts
+        </span>
+        <h1 style="margin:12px 0 12px 0;font-size:22px;font-weight:800;color:#192635;line-height:1.3;">
+          Laipni lūgti tirgū!
+        </h1>
+        <p style="margin:0 0 8px 0;font-size:15px;line-height:1.6;color:#444;">
+          Sveiks!
+        </p>
+        <p style="margin:0 0 20px 0;font-size:15px;line-height:1.6;color:#444;">
+          Tu reģistrēji pircēja kontu vietnē <strong>tirgus.izipizi.lv</strong> — Latvijas ražotāju
+          tirgus vietā. Apstiprini savu e-pasta adresi un sāc iepirkties tieši no vietējiem zemniekiem
+          un mājražotājiem:
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" style="padding:8px 28px 24px;">
+        <a href="{{ .ConfirmationURL }}"
+           style="display:inline-block;background:#192635;color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:14px 32px;border-radius:12px;letter-spacing:-0.01em;">
+          Apstiprināt e-pastu
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:0 28px 8px;">
+        <p style="margin:0 0 12px 0;font-size:13px;line-height:1.6;color:#666;font-weight:600;">
+          Reģistrētiem pircējiem:
+        </p>
+        <ul style="margin:0 0 20px 0;padding:0 0 0 20px;font-size:13px;line-height:1.8;color:#555;">
+          <li>Bonusi un īpaši piedāvājumi par pasūtījumiem</li>
+          <li>Iespēja sekot iemīļotiem ražotājiem un saņemt paziņojumus</li>
+          <li>Saglabātas piegādes adreses — ātrāka kase</li>
+          <li>Pasūtījumu vēsture vienuviet</li>
+        </ul>
+      </td>
+    </tr>
+    {{ end }}
+
+    <tr>
+      <td style="padding:0 28px 24px;">
+        <p style="margin:0 0 12px 0;font-size:13px;line-height:1.6;color:#666;">
+          Vai poga nestrādā? Iekopē šo saiti pārlūkā:
+        </p>
+        <p style="margin:0 0 20px 0;font-size:12px;line-height:1.5;color:#888;word-break:break-all;background:#f6f7f8;padding:10px 12px;border-radius:8px;">
+          {{ .ConfirmationURL }}
+        </p>
+        <div style="height:1px;background:#f0f1f3;margin:8px 0 16px;"></div>
+        <p style="margin:0 0 6px 0;font-size:13px;line-height:1.6;color:#666;">
+          ℹ️ Saite derīga 24 stundas.
+        </p>
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#666;">
+          Ja tu nereģistrēji kontu, droši vari ignorēt šo e-pastu — bez tavas darbības konts netiks aktivizēts.
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding:16px 28px 24px;border-top:1px solid #f0f1f3;color:#888;font-size:11px;line-height:1.6;">
+        Šis ir automātisks e-pasts no tirgus.izipizi.lv.<br>
+        SIA &quot;Svaigi&quot; · Margrietas iela 7, Rīga, LV-1046 · <a href="mailto:tirgus@izipizi.lv" style="color:#888;">tirgus@izipizi.lv</a>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

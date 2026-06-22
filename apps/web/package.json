@@ -1,0 +1,9 @@
+﻿{
+  "name": "@izipizi/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Static site — no build step'",
+    "dev": "npx serve web -l 3001"
+  }
+}

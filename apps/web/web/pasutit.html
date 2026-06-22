@@ -1,0 +1,1089 @@
+﻿<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Piesaki sūtījumu | IziPizi</title>
+<link rel="icon" type="image/png" href="assets/izipizi-favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+:root{
+  --navy:#192635; --navy-soft:#22344a;
+  --mint:#53F3A4; --mint-deep:#1ec97b;
+  --violet:#AD47FF; --violet-soft:#f3e8ff;
+  --paper:#eef5f1; --paper-2:#e6efea;
+  --card:#ffffff; --line:#dde7e1; --line-strong:#c6d3cc;
+  --ink:#192635; --muted:#5d6f78; --muted-2:#8696a0;
+  --danger:#d64545; --ok:#1ea672;
+  --radius:18px; --radius-sm:12px;
+  --shadow:0 1px 2px rgba(25,38,53,.04), 0 12px 32px -16px rgba(25,38,53,.18);
+  --shadow-lift:0 2px 6px rgba(25,38,53,.06), 0 24px 48px -20px rgba(25,38,53,.30);
+  --font-display:"Museo Sans","Mulish","Segoe UI",system-ui,sans-serif;
+  --font-body:"Museo Sans","Mulish","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; font-family:var(--font-body); color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 88% -10%, rgba(83,243,164,.18), transparent 60%),
+    radial-gradient(900px 500px at -10% 8%, rgba(173,71,255,.10), transparent 55%),
+    var(--paper);
+  line-height:1.5; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 120px}
+
+/* Header */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:30px}
+img.logo{height:clamp(116px,18vw,168px);width:auto;display:block}
+.topbar .help{font-size:13.5px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.6)}
+.topbar .help strong{color:var(--navy);font-weight:600}
+
+/* Hero */
+.order-hero{margin-bottom:24px;max-width:720px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mint-deep);background:rgba(83,243,164,.16);padding:6px 12px;border-radius:999px}
+.order-hero h1{font-family:var(--font-display);font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1.02;letter-spacing:-.025em;margin:16px 0 12px;color:var(--navy)}
+.order-hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--mint),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.order-hero p{font-size:16px;color:var(--muted);margin:0;max-width:54ch}
+
+/* Layout */
+.twopath{display:flex;align-items:stretch;margin:0 0 20px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.tp-try{flex:1;display:flex;align-items:center;gap:12px;padding:15px 18px;background:#eafdf4}
+.tp-try .bolt{width:38px;height:38px;border-radius:10px;background:var(--mint);display:grid;place-items:center;flex:none}
+.tp-try .bolt svg{width:21px;height:21px;color:var(--navy)}
+.tp-try b{font-size:14.5px;font-weight:700;color:var(--navy)}
+.tp-try span{display:block;font-size:12.5px;color:#3d6b57;font-weight:600}
+.tp-biz{flex:none;display:flex;align-items:center;gap:9px;padding:15px 20px;background:#fff;border-left:1px solid var(--line);font-size:13.5px;font-weight:700;color:var(--navy);text-decoration:none;white-space:nowrap}
+.tp-biz:hover{background:#fbfdfc}
+.tp-biz svg{width:18px;height:18px;color:var(--muted-2)}
+.tp-biz .arr{color:var(--mint-deep)}
+@media(max-width:620px){.twopath{flex-direction:column}.tp-biz{border-left:none;border-top:1px solid var(--line);white-space:normal}}
+.grid{display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+/* Method toggle */
+.method-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+@media(max-width:560px){.method-cards{grid-template-columns:1fr}}
+.mcard{position:relative;display:flex;gap:14px;align-items:flex-start;padding:18px;border:1.5px solid var(--line-strong);border-radius:var(--radius);background:var(--card);cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s;box-shadow:var(--shadow)}
+.mcard input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.mcard .ic{flex:none;width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:var(--paper-2);color:var(--navy)}
+.mcard .ic svg{width:26px;height:26px}
+.mcard .body .t{font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--navy);letter-spacing:-.01em}
+.mcard .body .d{font-size:13px;color:var(--muted);margin-top:3px}
+.mcard .body .from{font-size:12px;font-weight:600;color:var(--mint-deep);margin-top:7px}
+.mcard:hover{border-color:#aebfb7}
+.mcard:has(input:checked){border-color:var(--mint-deep);background:#f1fdf7;box-shadow:0 0 0 3px rgba(83,243,164,.18)}
+.mcard:has(input:checked) .ic{background:var(--mint);color:var(--navy)}
+.mcard:has(input:focus-visible){box-shadow:0 0 0 4px rgba(83,243,164,.32)}
+
+/* Sections */
+.section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:18px;box-shadow:var(--shadow)}
+.section-head{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.step-num{flex:none;width:34px;height:34px;border-radius:11px;background:var(--navy);color:#fff;font-family:var(--font-display);font-weight:700;font-size:15px;display:grid;place-items:center}
+.section-head h2{font-family:var(--font-display);font-weight:600;font-size:19px;letter-spacing:-.01em;margin:0;color:var(--navy)}
+.section-head p{margin:2px 0 0;font-size:13px;color:var(--muted-2)}
+
+/* Fields */
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+label.lbl{display:block;font-size:13.5px;font-weight:600;color:var(--navy);margin-bottom:7px}
+label.lbl .req{color:var(--violet);margin-left:2px}
+label.lbl .opt{color:var(--muted-2);font-weight:500;margin-left:6px;font-size:12px}
+.control{width:100%;font-family:inherit;font-size:15px;color:var(--ink);background:#fbfdfc;border:1.5px solid var(--line-strong);border-radius:var(--radius-sm);padding:12px 14px;transition:border-color .15s, box-shadow .15s, background .15s}
+.control::placeholder{color:#9fb0b8}
+.control:hover{border-color:#aebfb7}
+.control:focus{outline:none;border-color:var(--mint-deep);background:#fff;box-shadow:0 0 0 4px rgba(83,243,164,.22)}
+textarea.control{resize:vertical;min-height:74px}
+select.control{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235d6f78' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer}
+.hint{font-size:12.5px;color:var(--muted-2);margin-top:6px}
+.field.invalid .control{border-color:var(--danger);background:#fff7f7}
+.field .err{display:none;font-size:12.5px;color:var(--danger);margin-top:6px;font-weight:500}
+.field.invalid .err{display:block}
+
+/* same-locker checkbox */
+.checkrow{display:flex;align-items:center;gap:11px;margin-top:2px;padding:12px 14px;border:1.5px solid var(--line-strong);border-radius:12px;background:#fbfdfc;cursor:pointer}
+.checkrow input{width:19px;height:19px;accent-color:var(--mint-deep);cursor:pointer}
+.checkrow span{font-size:14px;font-weight:600;color:var(--navy)}
+.checkrow small{display:block;font-weight:500;color:var(--muted);font-size:12.5px}
+
+/* Choice cards */
+.choices{display:grid;gap:10px}
+.choices.split2{grid-template-columns:1fr 1fr}
+.choices.split3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:560px){.choices.split2,.choices.split3{grid-template-columns:1fr}}
+.choice{position:relative;display:flex;align-items:center;gap:14px;padding:15px 16px;border:1.5px solid var(--line-strong);border-radius:14px;background:#fbfdfc;cursor:pointer;transition:border-color .15s, box-shadow .15s, background .15s}
+.choice:hover{border-color:#aebfb7}
+.choice input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.choice .tick{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid var(--line-strong);display:grid;place-items:center;transition:.15s}
+.choice .tick::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--mint-deep);transform:scale(0);transition:transform .15s}
+.choice .glyph{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:var(--paper-2);color:var(--navy)}
+.choice .glyph svg{width:22px;height:22px}
+.choice .meta{flex:1;min-width:0}
+.choice .meta .t{font-weight:600;font-size:14.5px;color:var(--navy)}
+.choice .meta .d{font-size:12.5px;color:var(--muted)}
+.choice .price-tag{flex:none;font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--navy);font-variant-numeric:tabular-nums;text-align:right}
+.choice .price-tag small{display:block;font-family:var(--font-body);font-weight:500;font-size:11px;color:var(--muted-2)}
+.choice:has(input:checked){border-color:var(--mint-deep);background:#f1fdf7;box-shadow:0 0 0 3px rgba(83,243,164,.18)}
+.choice:has(input:checked) .tick{border-color:var(--mint-deep)}
+.choice:has(input:checked) .tick::after{transform:scale(1)}
+.choice:has(input:focus-visible){box-shadow:0 0 0 4px rgba(83,243,164,.30)}
+.choice.cold:has(input:checked){border-color:var(--violet);background:var(--violet-soft);box-shadow:0 0 0 3px rgba(173,71,255,.16)}
+.choice.cold:has(input:checked) .tick{border-color:var(--violet)}
+.choice.cold:has(input:checked) .tick::after{background:var(--violet)}
+.choice.cold .glyph{background:#f0e6fb;color:var(--violet)}
+.choice.col{flex-direction:column;align-items:flex-start;gap:9px}
+.choice.col .top{display:flex;align-items:center;gap:11px;width:100%}
+.choice.col .dims{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--muted);width:100%}
+.choice.col .dims svg{width:15px;height:15px;color:var(--muted-2);flex:none}
+.choice.col:has(input:checked) .dims{color:var(--navy)}
+
+/* Zone pill */
+.zonebox{display:flex;align-items:center;gap:11px;margin-top:12px;padding:11px 14px;border-radius:12px;background:var(--paper-2);border:1px dashed var(--line-strong);font-size:13.5px;color:var(--muted);min-height:48px}
+.zonebox .zpill{font-family:var(--font-display);font-weight:700;font-size:13px;color:#fff;background:var(--navy);padding:5px 11px;border-radius:8px}
+.zonebox.found{background:#f1fdf7;border-color:var(--mint-deep);border-style:solid;color:var(--navy)}
+.zonebox.found .zpill{background:var(--mint-deep)}
+.zonebox.q4{background:var(--violet-soft);border-color:var(--violet);border-style:solid;color:var(--navy)}
+.zonebox.q4 .zpill{background:var(--violet)}
+
+/* Time windows */
+.windows{display:flex;flex-wrap:wrap;gap:9px}
+.win{position:relative;cursor:pointer}
+.win input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.win span{display:inline-block;padding:9px 14px;border-radius:999px;border:1.5px solid var(--line-strong);background:#fbfdfc;font-size:13.5px;font-weight:600;color:var(--navy);transition:.15s;font-variant-numeric:tabular-nums}
+.win:hover span{border-color:#aebfb7}
+.win input:checked+span{background:var(--navy);color:#fff;border-color:var(--navy)}
+.win input:focus-visible+span{box-shadow:0 0 0 4px rgba(83,243,164,.30)}
+.note-inline{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:rgba(83,243,164,.12);font-size:13px;color:var(--navy);margin-top:4px}
+.note-inline svg{flex:none;width:17px;height:17px;color:var(--mint-deep);margin-top:1px}
+
+/* Receipt */
+.summary-col{position:sticky;top:20px}
+.receipt{background:var(--navy);color:#fff;border-radius:22px;overflow:hidden;box-shadow:var(--shadow-lift);position:relative}
+.receipt .r-head{padding:20px 22px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.receipt .r-head .r-logo{height:46px;width:auto;flex:none}
+.receipt .r-head .k{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);font-weight:600}
+.receipt .r-head .title{font-family:var(--font-display);font-weight:700;font-size:20px;margin-top:4px;letter-spacing:-.01em}
+.route{padding:4px 22px 6px}
+.route .stop{display:flex;gap:13px;padding:9px 0;position:relative}
+.route .stop .pin{flex:none;width:14px;height:14px;border-radius:50%;border:2.5px solid var(--mint);margin-top:3px;background:var(--navy);z-index:1}
+.route .stop.dest .pin{border-radius:4px;border-color:var(--violet)}
+.route .stop .conn{position:absolute;left:6px;top:24px;bottom:-9px;width:2px;background:repeating-linear-gradient(var(--mint) 0 4px, transparent 4px 8px);opacity:.6}
+.route .stop .info .lab{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#8aa0b3}
+.route .stop .info .val{font-size:14px;font-weight:600;color:#fff;margin-top:1px}
+.route .stop .info .val.empty{color:#5e748a;font-weight:500}
+.perf{height:0;border-top:2px dashed rgba(255,255,255,.18);margin:8px 0 0;position:relative}
+.perf::before,.perf::after{content:"";position:absolute;top:-11px;width:22px;height:22px;border-radius:50%;background:var(--paper)}
+.perf::before{left:-11px}.perf::after{right:-11px}
+.r-lines{padding:16px 22px 6px;display:grid;gap:11px}
+.r-line{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13.5px}
+.r-line.hide{display:none}
+.r-line .l{color:#9fb4c4}
+.r-line .v{font-weight:600;color:#fff;text-align:right}
+.r-line .v.muted{color:#6f8598;font-weight:500}
+.r-total{margin:8px 22px 0;padding:16px 0 4px;border-top:1px solid rgba(255,255,255,.1)}
+.r-total .big{display:flex;justify-content:space-between;align-items:flex-end}
+.r-total .big .lab{font-size:13px;color:#9fb4c4}
+.r-total .big .amt{font-family:var(--font-display);font-weight:800;font-size:34px;letter-spacing:-.02em;color:var(--mint);font-variant-numeric:tabular-nums;line-height:1}
+.r-total .vat{display:flex;justify-content:space-between;font-size:12.5px;color:#8aa0b3;margin-top:7px}
+.r-total .vat .amt2{color:#cfe0d8;font-weight:600;font-variant-numeric:tabular-nums}
+.r-cta{padding:18px 22px 22px}
+.btn{width:100%;border:none;cursor:pointer;font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--navy);background:var(--mint);padding:15px;border-radius:14px;letter-spacing:-.01em;transition:transform .12s, box-shadow .15s, filter .15s;box-shadow:0 10px 24px -10px rgba(83,243,164,.7)}
+.btn:hover{filter:brightness(1.04);box-shadow:0 14px 30px -10px rgba(83,243,164,.85)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(83,243,164,.4)}
+.btn[disabled]{background:#3a4a5c;color:#7d8fa0;cursor:not-allowed;box-shadow:none;filter:none}
+.submit-err{margin-top:10px;font-size:12.5px;color:#ffc2c2;background:rgba(214,69,69,.16);border:1px solid rgba(214,69,69,.4);border-radius:10px;padding:9px 12px;text-align:center}
+.r-fine{font-size:11.5px;color:#7c92a4;text-align:center;margin-top:11px;line-height:1.45}
+.r-fine a{color:var(--mint)}
+.price-pulse{animation:pulse .5s ease}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+.trust{margin-top:14px;display:grid;gap:9px}
+.trust .t{display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--muted);padding:0 4px}
+.trust .t svg{flex:none;width:16px;height:16px;color:var(--mint-deep)}
+
+/* Mobile bar */
+.mobile-bar{display:none}
+@media(max-width:900px){
+  .summary-col{position:static}
+  .mobile-bar{display:flex;align-items:center;gap:14px;position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--navy);padding:13px 18px calc(13px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px -12px rgba(0,0,0,.4)}
+  .mobile-bar .mp{flex:1;min-width:0}
+  .mobile-bar .mp .l{font-size:11px;color:#8aa0b3;letter-spacing:.04em}
+  .mobile-bar .mp .a{font-family:var(--font-display);font-weight:800;font-size:22px;color:var(--mint);font-variant-numeric:tabular-nums;line-height:1.1}
+  .mobile-bar .btn{width:auto;padding:13px 22px;font-size:15px}
+  .wrap{padding-bottom:96px}
+}
+
+/* Success */
+.success{display:none;text-align:center;padding:30px 24px}
+.success.show{display:block}
+.success .badge{width:66px;height:66px;border-radius:50%;background:rgba(83,243,164,.16);display:grid;place-items:center;margin:0 auto 16px}
+.success .badge svg{width:32px;height:32px;color:var(--mint-deep)}
+.success h3{font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--navy);margin:0 0 8px}
+.success p{color:var(--muted);font-size:14.5px;margin:0 auto;max-width:42ch}
+.success .ref{display:inline-block;margin-top:16px;font-family:var(--font-display);font-weight:700;color:var(--navy);background:var(--paper-2);padding:9px 16px;border-radius:10px;letter-spacing:.04em}
+.hidden{display:none!important}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-page="pasutit">
+<div class="wrap">
+
+  <section class="order-hero" style="margin-top:10px">
+    <span class="eyebrow">Individuālie sūtījumi</span>
+    <h1>Piesaki sūtījumu — <em>pārtikas pakomātā vai ar kurjeru</em></h1>
+    <p>Izvēlies piegādes veidu, un cenu aprēķinām uzreiz.</p>
+  </section>
+
+  <div class="twopath">
+    <div class="tp-try">
+      <span class="bolt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span>
+      <div><b>Izmēģini tūlīt — bez reģistrācijas</b><span>Aizpildi, apmaksā, saņem. Aizņem ~2 minūtes.</span></div>
+    </div>
+    <a class="tp-biz" href="https://business.izipiziapp.com">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      Sūti regulāri? Biznesa konts — apjoma atlaides <span class="arr">→</span>
+    </a>
+  </div>
+
+  <div class="grid">
+    <form id="orderForm" novalidate>
+
+      <!-- METHOD -->
+      <div class="method-cards" role="radiogroup" aria-label="Piegādes veids">
+        <label class="mcard">
+          <input type="radio" name="method" value="locker" checked>
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M12 3v18M7 7h2M7 11h2M15 7h2M15 11h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          <span class="body">
+            <span class="t">Pārtikas pakomāts</span>
+            <span class="d">Termo pārtikas pakomātu tīkls. Saņēmējs paņem ar kodu, 24/7.</span>
+            <span class="from">No 3,00 € ar PVN</span>
+          </span>
+        </label>
+        <label class="mcard">
+          <input type="radio" name="method" value="courier">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="7" cy="17" r="2" stroke="currentColor" stroke-width="2"/><circle cx="17" cy="17" r="2" stroke="currentColor" stroke-width="2"/></svg></span>
+          <span class="body">
+            <span class="t">Kurjers uz adresi</span>
+            <span class="d">Līdz durvīm ar kontrolētu temperatūru. Cena pēc zonas.</span>
+            <span class="from">No 5,45 € ar PVN</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- =================== LOCKER FLOW =================== -->
+      <div id="flowLocker">
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">1</div>
+            <div><h2>Maršruts</h2><p>No kura pārtikas pakomāta un uz kuru</p></div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="lFrom">No pārtikas pakomāta<span class="req">*</span></label>
+              <select class="control" id="lFrom" required></select>
+              <div class="err">Izvēlies sākuma pārtikas pakomātu.</div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="lTo">Uz pārtikas pakomātu<span class="req">*</span></label>
+              <select class="control" id="lTo" required></select>
+              <div class="err">Izvēlies galamērķa pārtikas pakomātu.</div>
+            </div>
+          </div>
+          <label class="checkrow">
+            <input type="checkbox" id="sameLocker">
+            <span>Saņēmējs paņem tajā pašā pārtikas pakomātā<small>Lētākais variants — no 3,00 €</small></span>
+          </label>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">2</div>
+            <div><h2>Izmērs un režīms</h2><p>Cik liels sūtījums un kāda temperatūra</p></div>
+          </div>
+          <div class="choices split3" id="sizeChoices" role="radiogroup" aria-label="Izmērs"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">3</div>
+            <div><h2>Kontakti</h2><p>Saņēmējs saņem SMS ar paņemšanas kodu</p></div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="lsName">Sūtītājs<span class="req">*</span></label>
+              <input class="control" id="lsName" placeholder="Tavs vārds, uzvārds" required>
+              <div class="err">Ievadi vārdu.</div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="lsPhone">Sūtītāja tālrunis<span class="req">*</span></label>
+              <input class="control" id="lsPhone" type="tel" inputmode="tel" placeholder="2X XXX XXX" required>
+              <div class="err">Vajadzīgs tālrunis.</div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="lsEmail">Sūtītāja e-pasts<span class="opt">— apstiprinājumam</span></label>
+            <input class="control" id="lsEmail" type="email" inputmode="email" placeholder="tavs@epasts.lv">
+            <div class="err">Pārbaudi e-pasta adresi.</div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="lrName">Saņēmējs<span class="req">*</span></label>
+              <input class="control" id="lrName" placeholder="Saņēmēja vārds, uzvārds" required>
+              <div class="err">Ievadi saņēmēja vārdu.</div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="lrPhone">Saņēmēja tālrunis<span class="req">*</span></label>
+              <input class="control" id="lrPhone" type="tel" inputmode="tel" placeholder="2X XXX XXX" required>
+              <div class="err">Vajadzīgs saņēmēja tālrunis.</div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label class="lbl" for="lCargo">Sūtījuma apraksts<span class="opt">— neobligāti</span></label>
+            <textarea class="control" id="lCargo" placeholder="Piem., mājas siers un ievārījums."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== COURIER FLOW =================== -->
+      <div id="flowCourier" class="hidden">
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">1</div>
+            <div><h2>Sūtītājs</h2><p>No kurienes paņemam sūtījumu</p></div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="csName">Vārds, uzvārds<span class="req">*</span></label>
+              <input class="control" id="csName" placeholder="Jānis Bērziņš" autocomplete="name" required>
+              <div class="err">Lūdzu, ievadi vārdu.</div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="csPhone">Telefons<span class="req">*</span></label>
+              <input class="control" id="csPhone" type="tel" inputmode="tel" placeholder="2X XXX XXX" autocomplete="tel" required>
+              <div class="err">Vajadzīgs derīgs telefona numurs.</div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="csEmail">E-pasts<span class="opt">— sūtīsim apstiprinājumu</span></label>
+            <input class="control" id="csEmail" type="email" inputmode="email" placeholder="janis@epasts.lv" autocomplete="email">
+            <div class="err">Pārbaudi e-pasta adresi.</div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label class="lbl" for="csAddr">Paņemšanas adrese<span class="req">*</span></label>
+            <input class="control" id="csAddr" placeholder="Iela, mājas nr., Rīga" autocomplete="street-address" required>
+            <div class="err">Norādi, kur paņemt sūtījumu.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">2</div>
+            <div><h2>Saņēmējs</h2><p>Pēc piegādes adreses nosakām zonu un cenu</p></div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="crName">Vārds, uzvārds<span class="req">*</span></label>
+              <input class="control" id="crName" placeholder="Anna Liepa" required>
+              <div class="err">Lūdzu, ievadi saņēmēja vārdu.</div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="crPhone">Telefons<span class="req">*</span></label>
+              <input class="control" id="crPhone" type="tel" inputmode="tel" placeholder="2X XXX XXX" required>
+              <div class="err">Vajadzīgs saņēmēja telefons.</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label class="lbl" for="crAddr">Piegādes adrese<span class="req">*</span></label>
+              <input class="control" id="crAddr" placeholder="Iela, mājas nr., dzīvoklis" required>
+              <div class="err">Norādi piegādes adresi.</div>
+            </div>
+            <div class="field">
+              <label class="lbl" for="crZip">Pasta indekss<span class="req">*</span></label>
+              <input class="control" id="crZip" inputmode="numeric" maxlength="7" placeholder="piem., LV-1050" required>
+              <div class="err">Ievadi 4 ciparu pasta indeksu.</div>
+            </div>
+          </div>
+          <div class="zonebox" id="zoneBox" aria-live="polite">
+            <span class="zpill" id="zonePill">—</span>
+            <span id="zoneText">Ievadi pasta indeksu, lai noteiktu zonu un cenu.</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">3</div>
+            <div><h2>Sūtījums</h2><p>Izvēlies temperatūras režīmu</p></div>
+          </div>
+          <div class="choices" role="radiogroup" aria-label="Temperatūras režīms">
+            <label class="choice">
+              <input type="radio" name="temp" value="0" checked>
+              <span class="tick"></span>
+              <span class="glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+              <span class="meta"><span class="t">Bez termo režīma</span><span class="d">Istabas temperatūra</span></span>
+              <span class="price-tag" data-tier="0">—<small>ar PVN</small></span>
+            </label>
+            <label class="choice cold">
+              <input type="radio" name="temp" value="1">
+              <span class="tick"></span>
+              <span class="glyph"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M4 7l16 10M20 7 4 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+              <span class="meta"><span class="t">+2…+6 °C <strong>vai</strong> −18 °C</span><span class="d">Atdzesēts vai saldēts (viens režīms)</span></span>
+              <span class="price-tag" data-tier="1">—<small>ar PVN</small></span>
+            </label>
+            <label class="choice cold">
+              <input type="radio" name="temp" value="2">
+              <span class="tick"></span>
+              <span class="glyph"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M4 12h16M9 7v2M9 16v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+              <span class="meta"><span class="t">+2…+6 °C <strong>un</strong> −18 °C</span><span class="d">Atdzesēts un saldēts kopā</span></span>
+              <span class="price-tag" data-tier="2">—<small>ar PVN</small></span>
+            </label>
+          </div>
+          <div class="field" style="margin-top:16px">
+            <label class="lbl" for="cWeight">Svars (kg)<span class="req">*</span></label>
+            <input class="control" id="cWeight" type="number" inputmode="decimal" min="0.1" step="0.1" placeholder="piem., 12" required>
+            <div class="hint" id="weightHint">1 svara vienība = līdz 30 kg. Katra nākamā vienība +2/3 no cenas.</div>
+            <div class="err">Ievadi svaru kilogramos.</div>
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label class="lbl" for="cCargo">Sūtījuma apraksts<span class="opt">— neobligāti</span></label>
+            <textarea class="control" id="cCargo" placeholder="Piem., 2 kastes saldētu ogu. Trausls."></textarea>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-head">
+            <div class="step-num">4</div>
+            <div><h2>Piegāde</h2><p>Ātrums, datums un laika logs</p></div>
+          </div>
+          <div class="choices split2" role="radiogroup" aria-label="Piegādes ātrums">
+            <label class="choice">
+              <input type="radio" name="speed" value="standard" checked>
+              <span class="tick"></span>
+              <span class="meta"><span class="t">Standarta</span><span class="d">Izvēlies laika logu</span></span>
+            </label>
+            <label class="choice">
+              <input type="radio" name="speed" value="express">
+              <span class="tick"></span>
+              <span class="meta"><span class="t">Ekspress</span><span class="d">5 h laikā pēc pieteikuma</span></span>
+            </label>
+          </div>
+          <div class="field" id="dateField" style="margin-top:18px">
+            <label class="lbl" for="dDate">Piegādes datums<span class="req">*</span></label>
+            <input class="control" id="dDate" type="date" required>
+            <div class="hint" id="cutoffHint">Standarta sūtījumus piesaki iepriekšējā dienā līdz 20:00.</div>
+            <div class="err">Izvēlies datumu.</div>
+          </div>
+          <div class="field" id="windowField" style="margin-bottom:0">
+            <label class="lbl">Laika logs<span class="req">*</span></label>
+            <div class="windows" id="windows" role="radiogroup" aria-label="Laika logs"></div>
+            <div class="note-inline" id="expressNote" style="display:none">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Ekspress piegādājam 5 stundu laikā pēc pieteikuma. Pieteikšana darba dienās 08:00–16:00, brīvdienās 08:00–10:00.</span>
+            </div>
+            <div class="err">Izvēlies laika logu.</div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <!-- =================== RECEIPT =================== -->
+    <aside class="summary-col">
+      <div class="receipt" id="receipt">
+        <div class="r-head">
+          <div>
+            <div class="k">Sūtījuma kvīts</div>
+            <div class="title" id="rTitle">Pārtikas pakomāta sūtījums</div>
+          </div>
+          <img class="r-logo" src="assets/izipizi-badge.png" alt="izipizi">
+        </div>
+        <div class="route">
+          <div class="stop">
+            <span class="pin"></span><span class="conn"></span>
+            <span class="info"><span class="lab" id="rFromLab">No pārtikas pakomāta</span><span class="val empty" id="sumFrom">—</span></span>
+          </div>
+          <div class="stop dest">
+            <span class="pin"></span>
+            <span class="info"><span class="lab" id="rToLab">Uz pārtikas pakomātu</span><span class="val empty" id="sumTo">—</span></span>
+          </div>
+        </div>
+        <div class="perf"></div>
+        <div class="r-lines">
+          <div class="r-line" id="lineA"><span class="l" id="labA">Tips</span><span class="v muted" id="valA">—</span></div>
+          <div class="r-line" id="lineB"><span class="l" id="labB">Izmērs</span><span class="v" id="valB">—</span></div>
+          <div class="r-line" id="lineC"><span class="l" id="labC">Režīms</span><span class="v" id="valC">—</span></div>
+          <div class="r-line" id="lineD"><span class="l" id="labD">Saņemšana</span><span class="v" id="valD">24/7 ar kodu</span></div>
+          <div class="r-line hide" id="lineE"><span class="l" id="labE">Svars</span><span class="v muted" id="valE">—</span></div>
+        </div>
+        <div class="r-total">
+          <div class="big">
+            <span class="lab">Kopā <small style="opacity:.7" id="vatLabel">ar PVN</small></span>
+            <span class="amt" id="sumPrice">—</span>
+          </div>
+          <div class="vat"><span id="vatSubLabel">t.sk. PVN 21%</span><span class="amt2" id="sumPriceVat">—</span></div>
+        </div>
+        <div class="r-cta">
+          <button type="submit" form="orderForm" class="btn" id="submitBtn" disabled>Pieteikt sūtījumu</button>
+          <div class="submit-err" id="submitErr" style="display:none"></div>
+          <div class="r-fine">Piesakot piekrīti <a href="https://www.izipizi.lv/privātuma-politika">privātuma politikai</a>. Cenu apstiprināsim pirms piegādes.</div>
+        </div>
+      </div>
+
+      <div class="trust">
+        <div class="t"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Nepārtraukta aukstuma ķēde visā ceļā</div>
+        <div class="t"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Sekošana statusam reālā laikā</div>
+        <div class="t"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12c0-1 .8-2 2-2h14c1.2 0 2 1 2 2v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Z" stroke="currentColor" stroke-width="2"/><path d="M7 10V8a5 5 0 0 1 10 0v2" stroke="currentColor" stroke-width="2"/></svg> Droša un vietēja piegāde — savējiem no savējiem</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="section success" id="successCard" style="margin-top:18px">
+    <div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="m5 13 4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h3>Sūtījums pieteikts!</h3>
+    <p>Paldies! Saņēmām tavu pieteikumu un sazināsimies, lai apstiprinātu detaļas. Apstiprinājumu nosūtīsim arī uz e-pastu.</p>
+    <div class="ref" id="refNo">IZI-000000</div>
+  </div>
+
+  <div class="mobile-bar" id="mobileBar">
+    <div class="mp"><span class="l" id="mLabel">Kopā ar PVN</span><span class="a" id="mPrice">—</span></div>
+    <button type="submit" form="orderForm" class="btn" id="mSubmitBtn" disabled>Pieteikt</button>
+  </div>
+</div>
+
+<script src="header.js"></script>
+<script src="address-autocomplete.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var form = $("orderForm");
+  var VAT = 0.21;
+
+  /* ---------- Locker data ---------- */
+  var LOCKERS = [
+    {id:"brivibas",  name:"Brīvības iela 253", sub:"Brīvības 253 / Neste, Rīga", hours:"24/7"},
+    {id:"salaspils", name:"Salaspils",         sub:"Zviedru 1C / Neste, Salaspils", hours:"24/7"},
+    {id:"agenskalns",name:"Āgenskalna tirgus", sub:"Nometņu 64, Rīga", hours:"24/7"},
+    {id:"tukums",    name:"Tukuma tirgus",     sub:"J. Raiņa 30, Tukums", hours:"24/7"},
+    {id:"dundaga",   name:"Dundagas tirgus",   sub:"Pils 3B, Dundaga", hours:"24/7"},
+    {id:"ikskile",   name:"Ikšķile — Labumu bode", sub:"Daugavas 63, Ikšķile", hours:"10–20"},
+    {id:"iukstes",   name:"Ilūkstes iela 40A", sub:"Ilūkstes 40A, Rīga", hours:"24/7"}
+  ];
+  // Locker prices INCL VAT
+  var LOCKER_PRICE = {
+    same:    { M:3.00, L:3.99, XL:4.50 },
+    between: { M:7.50, L:9.50, XL:9.90 }
+  };
+  // dims = paciņas maksimālais izmērs (P × Dz × A cm). PAGAIDU vērtības — aizvieto ar īstajām!
+  var SIZES = [
+    {id:"M",  t:"M",  temp:"+2…+6 °C", desc:"Atdzesēts · mazākais",  dims:"39 × 35 × 18 cm"},
+    {id:"L",  t:"L",  temp:"−18 °C",   desc:"Saldēts",               dims:"39 × 35 × 38 cm"},
+    {id:"XL", t:"XL", temp:"+2…+6 °C", desc:"Atdzesēts · lielākais", dims:"39 × 35 × 58 cm"}
+  ];
+
+  /* ---------- Courier data ---------- */
+  var ZONES = {
+    0:[1001,1002,1003,1004,1009,1010,1011,1012,1013,1019,1045,1046,1048,1050],
+    1:[1005,1006,1007,1014,1015,1021,1023,1024,1026,1029,1034,1035,1039,1053,1055,1057,1058,1063,1064,1067,1069,1073,1076,1079,1082,1083,1084,2101,2108,2111,2112,2119,2128,2130,2167],
+    2:[1016,1030,2103,2107,2114,2117,2118,2121,2123,2127,2137,2163,2164,2166,2169],
+    3:[2008,2010,2011,2012,2015,2016,2105,5001,5015,5016,5041,5052,5060,5070,5071]
+  };
+  // Courier prices EXCL VAT [zone][speed][tier 0=ambient,1=single,2=both]
+  var PRICES = {
+    0:{ standard:[4.50,6.40,7.30], express:[5.50,7.50,8.50] },
+    1:{ standard:[5.50,6.40,7.30], express:[7.00,9.00,10.00] },
+    2:{ standard:[7.50,8.40,9.30], express:[10.50,12.50,13.50] },
+    3:{ standard:[8.90,9.90,10.90], express:null },
+    4:null
+  };
+  function windowsFor(zone, speed){
+    if(speed==="express") return [];
+    if(zone===0||zone===1) return ["09:00–12:00","12:00–18:00","18:00–22:00"];
+    if(zone===2||zone===3) return ["08:00–18:00"];
+    return [];
+  }
+
+  var state = { method:"locker", from:"", to:"", same:false, size:"M",
+                zone:null, tier:0, speed:"standard", window:null, weight:"",
+                busKm:null, busPrice:null };
+
+  /* ---------- Bus: 4. zona, 0.65 €/km no Āgenskalna ---------- */
+  var BUS_EUR_PER_KM = 0.65;
+  var AGENSKALNS = { lat: 56.9377, lng: 24.0859 }; // Āgenskalna tirgus
+  // Pasta indeksu aptuvenas koordinātes (galveno pilsētu centroidi)
+  var ZIP_COORDS = {
+    30:{lat:56.651,lng:23.713,n:"Jelgava"},31:{lat:56.67,lng:23.75,n:"Jelgavas nov."},
+    32:{lat:56.97,lng:23.16,n:"Tukuma nov."},33:{lat:57.24,lng:22.59,n:"Talsu nov."},
+    34:{lat:56.97,lng:21.97,n:"Kuldīgas/Ventspils nov."},36:{lat:56.66,lng:22.49,n:"Saldus nov."},
+    37:{lat:56.51,lng:21.01,n:"Liepāja"},38:{lat:56.37,lng:21.18,n:"Dienvidkurzeme"},
+    39:{lat:56.41,lng:24.32,n:"Bauskas nov."},
+    40:{lat:56.50,lng:25.87,n:"Jēkabpils"},41:{lat:55.87,lng:26.53,n:"Daugavpils"},
+    42:{lat:56.51,lng:27.33,n:"Rēzekne"},43:{lat:56.30,lng:26.72,n:"Preiļi/Krāslava"},
+    44:{lat:56.55,lng:27.72,n:"Ludza/Balvi"},45:{lat:57.18,lng:26.75,n:"Gulbene"},
+    46:{lat:56.85,lng:26.23,n:"Madona"},47:{lat:57.54,lng:25.43,n:"Valmiera"},
+    48:{lat:57.51,lng:24.36,n:"Limbažu nov."},
+    50:{lat:56.88,lng:24.60,n:"Ogres nov."},51:{lat:56.81,lng:24.70,n:"Ogres nov."},
+    52:{lat:56.60,lng:25.10,n:"Aizkraukle"},53:{lat:56.62,lng:23.28,n:"Dobele"},
+    54:{lat:56.50,lng:25.87,n:"Jēkabpils nov."},55:{lat:57.31,lng:27.06,n:"Alūksne"},
+    56:{lat:57.07,lng:25.40,n:"Cēsis"},57:{lat:57.40,lng:25.26,n:"Valka"}
+  };
+  function haversineKm(a,b){
+    var R=6371, dLat=(b.lat-a.lat)*Math.PI/180, dLng=(b.lng-a.lng)*Math.PI/180;
+    var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+    return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
+  }
+  function calcBusDistance(zipRaw){
+    var d=(zipRaw||"").replace(/\D/g,"");
+    if(d.length<4) return null;
+    var prefix=parseInt(d.slice(-4,-2),10);
+    var coords=ZIP_COORDS[prefix];
+    if(!coords) return null;
+    var straight=haversineKm(AGENSKALNS,coords);
+    return Math.round(straight*1.4); // ceļa korekcija
+  }
+
+  function fmt(n){ return n.toFixed(2).replace(".",",")+" €"; }
+  // Weight units: 1 unit = up to 30 kg. Each extra unit adds 2/3 of base price.
+  function weightUnits(kg){ var w=parseFloat(kg)||0; return w<=0 ? 1 : Math.max(1, Math.ceil(w/30)); }
+  function weightMult(kg){ return 1 + (weightUnits(kg)-1) * (2/3); }
+
+  /* ---------- Build locker selects ---------- */
+  function fillSelect(sel, placeholder){
+    sel.innerHTML = '<option value="">'+placeholder+'</option>';
+    LOCKERS.forEach(function(l){
+      var o=document.createElement("option"); o.value=l.id; o.textContent=l.name+" · "+l.sub;
+      sel.appendChild(o);
+    });
+  }
+  fillSelect($("lFrom"),"Izvēlies pārtikas pakomātu…");
+  fillSelect($("lTo"),"Izvēlies pārtikas pakomātu…");
+
+  function lockerName(id){ var l=LOCKERS.filter(function(x){return x.id===id;})[0]; return l?l.name:""; }
+
+  /* ---------- Build size cards ---------- */
+  (function(){
+    var wrap=$("sizeChoices");
+    SIZES.forEach(function(s,i){
+      var lbl=document.createElement("label");
+      lbl.className="choice col"+(s.id==="L"?" cold":"");
+      lbl.innerHTML =
+        '<div class="top"><input type="radio" name="size" value="'+s.id+'"'+(i===0?" checked":"")+'>'+
+        '<span class="tick"></span>'+
+        '<span class="meta"><span class="t">Izmērs '+s.t+'</span><span class="d">'+s.desc+'</span></span></div>'+
+        '<span class="dims"><svg viewBox="0 0 24 24" fill="none"><path d="M3 8h18v8H3zM7 8v3M11 8v4M15 8v3M19 8v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>līdz '+s.dims+'</span>'+
+        '<span class="price-tag" data-size="'+s.id+'">—<small>'+s.temp+'</small></span>';
+      wrap.appendChild(lbl);
+      lbl.querySelector("input").addEventListener("change",function(){ state.size=s.id; render(); });
+    });
+  })();
+
+  /* ---------- Zone detection ---------- */
+  function detectZone(raw){
+    var d=(raw||"").replace(/\D/g,"");
+    if(d.length<4) return null;
+    var code=parseInt(d.slice(-4),10);
+    for(var z in ZONES){ if(ZONES[z].indexOf(code)!==-1) return parseInt(z,10); }
+    return 4;
+  }
+
+  /* ---------- Method switch ---------- */
+  function setMethod(m){
+    state.method=m;
+    $("flowLocker").classList.toggle("hidden", m!=="locker");
+    $("flowCourier").classList.toggle("hidden", m!=="courier");
+    $("rTitle").textContent = m==="locker" ? "Pārtikas pakomāta sūtījums" : "Kurjera sūtījums";
+    // receipt labels
+    if(m==="locker"){
+      $("rFromLab").textContent="No pārtikas pakomāta"; $("rToLab").textContent="Uz pārtikas pakomātu";
+      $("labA").textContent="Tips"; $("labB").textContent="Izmērs"; $("labC").textContent="Režīms"; $("labD").textContent="Saņemšana";
+      $("vatLabel").textContent="ar PVN"; $("vatSubLabel").textContent="t.sk. PVN 21%"; $("mLabel").textContent="Kopā ar PVN";
+      $("lineD").classList.remove("hide"); $("lineE").classList.add("hide");
+    } else {
+      $("rFromLab").textContent="Paņemšana"; $("rToLab").textContent="Piegāde";
+      $("labA").textContent="Zona"; $("labB").textContent="Temperatūra"; $("labC").textContent="Ātrums"; $("labD").textContent="Laiks";
+      $("vatLabel").textContent="ar PVN"; $("vatSubLabel").textContent="t.sk. PVN 21%"; $("mLabel").textContent="Kopā ar PVN";
+      $("lineE").classList.remove("hide");
+    }
+    render();
+  }
+  form.querySelectorAll('input[name="method"]').forEach(function(r){
+    r.addEventListener("change",function(){ setMethod(this.value); });
+  });
+
+  /* ---------- Locker inputs ---------- */
+  $("lFrom").addEventListener("change",function(){
+    state.from=this.value;
+    if(state.same){ $("lTo").value=this.value; state.to=this.value; }
+    render();
+  });
+  $("lTo").addEventListener("change",function(){ state.to=this.value; render(); });
+  $("sameLocker").addEventListener("change",function(){
+    state.same=this.checked;
+    $("lTo").disabled=this.checked;
+    if(this.checked && state.from){ $("lTo").value=state.from; state.to=state.from; }
+    render();
+  });
+
+  /* ---------- Courier inputs ---------- */
+  $("crZip").addEventListener("input",function(){
+    state.zone=detectZone(this.value);
+    buildWindows(); render();
+  });
+  ["csAddr","crAddr"].forEach(function(id){ $(id).addEventListener("input",render); });
+  $("cWeight").addEventListener("input",function(){ state.weight=this.value; render(); });
+  form.querySelectorAll('input[name="temp"]').forEach(function(r){
+    r.addEventListener("change",function(){ state.tier=parseInt(this.value,10); render(); });
+  });
+  form.querySelectorAll('input[name="speed"]').forEach(function(r){
+    r.addEventListener("change",function(){
+      state.speed=this.value;
+      $("cutoffHint").textContent = state.speed==="express"
+        ? "Ekspress: pieteikšana darba dienās 08:00–16:00, brīvdienās 08:00–10:00."
+        : "Standarta sūtījumus piesaki iepriekšējā dienā līdz 20:00.";
+      buildWindows(); render();
+    });
+  });
+
+  /* ---------- Time windows ---------- */
+  function buildWindows(){
+    var wrap=$("windows"), note=$("expressNote"), field=$("windowField");
+    var lbl=field.querySelector(".lbl");
+    if(state.speed==="express"){
+      wrap.innerHTML=""; note.style.display="flex"; lbl.style.display="none"; state.window="5 h laikā"; return;
+    }
+    note.style.display="none"; lbl.style.display="block";
+    if(state.zone===null||state.zone===4){
+      wrap.innerHTML='<div class="hint">Vispirms ievadi derīgu pasta indeksu.</div>'; state.window=null; return;
+    }
+    var wins=windowsFor(state.zone,state.speed); var keep=state.window;
+    wrap.innerHTML="";
+    wins.forEach(function(w,i){
+      var lab=document.createElement("label"); lab.className="win";
+      lab.innerHTML='<input type="radio" name="window" value="'+w+'"><span>'+w+'</span>';
+      wrap.appendChild(lab);
+      var inp=lab.querySelector("input");
+      if(wins.length===1||keep===w){ inp.checked=true; state.window=w; }
+      inp.addEventListener("change",function(){ state.window=w; $("windowField").classList.remove("invalid"); render(); });
+    });
+    if(wins.indexOf(state.window)===-1 && wins.length>1) state.window=null;
+  }
+
+  /* ---------- Pricing ---------- */
+  function lockerPrice(){
+    if(!state.from || !state.to) return null;
+    var table = (state.same || state.from===state.to) ? LOCKER_PRICE.same : LOCKER_PRICE.between;
+    return table[state.size]; // incl VAT
+  }
+  function courierPrice(){
+    if(state.zone===null) return null;
+    // 4. zona = buss ar dzesētāju
+    if(state.zone===4){
+      if(!state.busKm) return null;
+      state.busPrice = state.busKm * BUS_EUR_PER_KM; // excl VAT
+      return state.busPrice;
+    }
+    var p=PRICES[state.zone][state.speed];
+    if(!p) return null;
+    return p[state.tier] * weightMult(state.weight); // excl VAT, weight-adjusted
+  }
+
+  /* ---------- Receipt tags ---------- */
+  function refreshLockerTags(){
+    document.querySelectorAll('#sizeChoices .price-tag').forEach(function(tag){
+      var sz=tag.getAttribute("data-size");
+      var table=(state.same||state.from===state.to)?LOCKER_PRICE.same:LOCKER_PRICE.between;
+      var ready = state.from && state.to;
+      tag.firstChild.nodeValue = ready ? fmt(table[sz]) : "—";
+    });
+  }
+  function refreshCourierTags(){
+    var mult = weightMult(state.weight);
+    document.querySelectorAll('#flowCourier .price-tag').forEach(function(tag){
+      var tier=parseInt(tag.getAttribute("data-tier"),10);
+      var small=tag.querySelector("small"); var txt;
+      if(state.zone===null){ txt="—"; }
+      else if(state.zone===4 || !PRICES[state.zone] || !PRICES[state.zone][state.speed]){ txt="pēc piepras."; }
+      else { txt=fmt(PRICES[state.zone][state.speed][tier]*mult*(1+VAT)); }
+      tag.firstChild.nodeValue=txt;
+      small.style.display = (txt==="—"||txt==="pēc piepras.") ? "none":"block";
+    });
+  }
+
+  function renderZoneBox(){
+    var box=$("zoneBox"), pill=$("zonePill"), txt=$("zoneText");
+    box.className="zonebox";
+    if(state.zone===null){ pill.textContent="\u2014"; txt.textContent="Ievadi pasta indeksu, lai noteiktu zonu un cenu."; return; }
+    if(state.zone===4){
+      var km = calcBusDistance($("crZip").value);
+      state.busKm = km;
+      box.classList.add("q4"); pill.textContent="Buss";
+      if(km){
+        var priceExcl = km * BUS_EUR_PER_KM;
+        var vatAmount = priceExcl * VAT;
+        var priceIncl = priceExcl + vatAmount;
+        txt.innerHTML = '\ud83d\ude8c <b>Pieg\u0101de ar busu (ar dzes\u0113t\u0101ju)</b><br>'
+          + 'Att\u0101lums no \u0100genskalna tirgus: <b>~' + km + ' km</b><br>'
+          + 'Cena: <b>' + fmt(priceExcl) + '</b> + PVN 21% (<b>' + fmt(vatAmount) + '</b>) = <b>' + fmt(priceIncl) + '</b>'
+          + '<br><span style="color:var(--muted-2);font-size:12px">0,65 \u20ac/km \u00d7 ' + km + ' km + PVN</span>';
+      } else {
+        txt.textContent = '\ud83d\ude8c Pieg\u0101de ar busu (ar dzes\u0113t\u0101ju). Ievadi pasta indeksu, lai apr\u0113\u0137in\u0101tu att\u0101lumu.';
+      }
+      return;
+    }
+    box.classList.add("found"); pill.textContent=state.zone+". zona";
+    var exp = PRICES[state.zone].express ? "" : " \u00b7 ekspress \u0161eit p\u0113c piepras\u012bjuma";
+    txt.textContent="Pieg\u0101des zona noteikta autom\u0101tiski"+exp+".";
+  }
+
+  /* ---------- Render ---------- */
+  var lastPrice=null;
+  function setRoute(fromTxt,fromFilled,toTxt,toFilled){
+    var f=$("sumFrom"), t=$("sumTo");
+    f.textContent=fromTxt||"—"; f.classList.toggle("empty",!fromFilled);
+    t.textContent=toTxt||"—"; t.classList.toggle("empty",!toFilled);
+  }
+
+  function render(){
+    var price, priceIncl, priceExcl, ready;
+
+    if(state.method==="locker"){
+      refreshLockerTags();
+      $("lineC").classList.remove("hide"); $("lineD").classList.remove("hide");
+      setRoute(lockerName(state.from), !!state.from, lockerName(state.to), !!state.to);
+      var same=(state.same||state.from===state.to)&&state.from;
+      $("valA").textContent = !state.from||!state.to ? "—" : (same?"Vienā pārtikas pakomātā":"Starp pārtikas pakomātiem");
+      $("valA").className = "v"+((!state.from||!state.to)?" muted":"");
+      var sz=SIZES.filter(function(s){return s.id===state.size;})[0];
+      $("valB").textContent = "Izmērs "+sz.t;
+      $("valC").textContent = sz.temp;
+      $("valD").textContent = "24/7 ar kodu";
+      price=lockerPrice();
+      if(price!==null){ priceIncl=price; priceExcl=price/(1+VAT); }
+      ready=!!(state.from&&state.to);
+    } else {
+      refreshCourierTags(); renderZoneBox();
+      var fromA=$("csAddr").value.trim(), toA=$("crAddr").value.trim();
+      setRoute(fromA||"Sūtītāja adrese", !!fromA, toA||"Saņēmēja adrese", !!toA);
+      if(state.zone===4 && state.busKm){
+        $("valA").textContent = "Buss ~"+state.busKm+" km";
+      } else {
+        $("valA").textContent = state.zone===null?"\u2014":(state.zone===4?"Buss":state.zone+". zona");
+      }
+      $("valA").className="v"+(state.zone===null?" muted":"");
+      var tempNames=["Bez termo","+2…+6 °C / −18 °C","+2…+6 °C un −18 °C"];
+      $("valB").textContent=tempNames[state.tier];
+      $("valC").textContent=state.speed==="express"?"Ekspress":"Standarta";
+      var winTxt=state.speed==="express"?"5 h laikā":(state.window||"—");
+      $("valD").textContent=winTxt; $("valD").className="v"+((state.window||state.speed==="express")?"":" muted");
+      // weight line + live hint
+      var w=parseFloat(state.weight)||0, u=weightUnits(state.weight), m=weightMult(state.weight);
+      if(w>0){
+        $("valE").textContent = (Number.isInteger(w)?w:w.toFixed(1).replace(".",",")) + " kg · " + u + " vien." + (u>1?(" ×"+m.toFixed(2).replace(".",",")):"");
+        $("valE").className="v";
+      } else { $("valE").textContent="—"; $("valE").className="v muted"; }
+      var hintEl=$("weightHint");
+      if(w>0){
+        var lo=(u-1)*30+1, hi=u*30;
+        hintEl.textContent = u===1 ? "1 svara vienība (1–30 kg) — pamatcena."
+          : (u+" svara vienības ("+lo+"–"+hi+" kg) → cena ×"+m.toFixed(2).replace(".",",")+" (+"+(u-1)+"×2/3).");
+      } else {
+        hintEl.textContent="1 svara vienība = līdz 30 kg. Katra nākamā vienība +2/3 no cenas.";
+      }
+      price=courierPrice();
+      if(price!==null){ priceExcl=price; priceIncl=price*(1+VAT); }
+      ready=(state.zone!==null);
+    }
+
+    // price display
+    var priceEl=$("sumPrice"), vatEl=$("sumPriceVat"), mEl=$("mPrice");
+    if(price===null){
+      var byReq = (state.method==="courier" && (state.zone===4 || (state.zone!==null && PRICES[state.zone] && !PRICES[state.zone].express && state.speed==="express")));
+      priceEl.textContent = byReq ? "Pēc piepras." : "—";
+      priceEl.style.fontSize = byReq ? "20px":"34px";
+      vatEl.textContent="—";
+      mEl.textContent = byReq ? "Pēc piepras." : "—";
+      mEl.style.fontSize = byReq ? "15px":"22px";
+    } else {
+      priceEl.textContent=fmt(priceIncl); priceEl.style.fontSize="34px";
+      vatEl.textContent=fmt(priceIncl-priceExcl);
+      mEl.textContent=fmt(priceIncl); mEl.style.fontSize="22px";
+      if(priceIncl!==lastPrice){ priceEl.classList.remove("price-pulse"); void priceEl.offsetWidth; priceEl.classList.add("price-pulse"); }
+    }
+    lastPrice = price===null?null:priceIncl;
+
+    // submit button
+    var btns=[$("submitBtn"),$("mSubmitBtn")];
+    btns.forEach(function(b){ b.disabled=!ready; });
+    var canBuy = price!==null;
+    var byReqMode = ready && !canBuy;
+    btns.forEach(function(b){
+      b.textContent = byReqMode ? (b.id==="mSubmitBtn"?"Pieprasīt":"Pieprasīt cenu")
+                                : (b.id==="mSubmitBtn"?"Pieteikt":"Pieteikt sūtījumu");
+    });
+  }
+
+  /* ---------- Validation ---------- */
+  function validateField(input){
+    var field=input.closest(".field"); if(!field) return true;
+    var v=input.value.trim(); var ok=true;
+    if(input.hasAttribute("required") && !v) ok=false;
+    if(ok && input.type==="email" && v) ok=/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+    if(ok && input.id==="crZip") ok=(v.replace(/\D/g,"").length>=4);
+    if(ok && input.id==="cWeight") ok=((parseFloat(v)||0) > 0);
+    if(ok && /Phone$/.test(input.id)) ok=(v.replace(/\D/g,"").length>=8);
+    field.classList.toggle("invalid",!ok);
+    return ok;
+  }
+  form.querySelectorAll("input, textarea, select").forEach(function(inp){
+    inp.addEventListener("blur",function(){ if(inp.value.trim()!=="" || inp.hasAttribute("required")) validateField(inp); });
+    inp.addEventListener("input",function(){ var f=inp.closest(".field"); if(f && f.classList.contains("invalid")) validateField(inp); });
+  });
+
+  // min date: standarta = iepriekšējā dienā līdz 20:00
+  // Pirms 20:00 → agrākais rīt; pēc 20:00 → agrākais parīt
+  (function(){
+    var d=new Date(); var p=function(n){return(n<10?"0":"")+n;};
+    var addDays = d.getHours() >= 20 ? 2 : 1; // pēc 20:00 = +2 dienas
+    d.setDate(d.getDate() + addDays);
+    var minDate = d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+    $("dDate").min = minDate;
+    $("dDate").value = minDate;
+  })();
+
+  /* ---------- Supabase ---------- */
+  // 1) Ieliec sava projekta vērtības. 2) Palaid sutijumi.sql migrāciju.
+  var SUPABASE_URL = "https://wepyslyqcxpszobfkzzs.supabase.co";
+  var SUPABASE_ANON_KEY = "sb_publishable_BMqu4RvrA4cl72OJQQakLA_8Amc2F8-";
+  var SB_READY = (SUPABASE_URL.indexOf("YOUR-PROJECT") === -1 && typeof supabase !== "undefined");
+  var sb = SB_READY ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+  function round2(n){ return (n==null) ? null : Math.round(n*100)/100; }
+  function makeRef(){ return "IZI-" + (Date.now().toString(36).slice(-4) + Math.floor(Math.random()*900+100)).toUpperCase(); }
+
+  function buildRow(ref){
+    if(state.method==="locker"){
+      var pin = lockerPrice();
+      return {
+        ref:ref, method:"locker", status: (pin==null?"cenas_pieprasijums":"jauns"),
+        sender_name:$("lsName").value, sender_phone:$("lsPhone").value, sender_email:$("lsEmail").value,
+        recipient_name:$("lrName").value, recipient_phone:$("lrPhone").value,
+        cargo:$("lCargo").value,
+        price_eur: round2(pin), price_excl_vat: round2(pin==null?null:pin/1.21), vat_rate:0.21,
+        locker_from:state.from, locker_to:state.to, locker_same:(state.same||state.from===state.to), size:state.size,
+        details:{ from_name:lockerName(state.from), to_name:lockerName(state.to) }
+      };
+    }
+    var pex = courierPrice(); var pinc = (pex==null?null:pex*1.21);
+    var isBus = (state.zone===4 && state.busKm);
+    return {
+      ref:ref, method: isBus ? "bus" : "courier", status: (pex==null?"cenas_pieprasijums":"jauns"),
+      sender_name:$("csName").value, sender_phone:$("csPhone").value, sender_email:$("csEmail").value, sender_address:$("csAddr").value,
+      recipient_name:$("crName").value, recipient_phone:$("crPhone").value, recipient_address:$("crAddr").value, recipient_zip:$("crZip").value,
+      cargo:$("cCargo").value,
+      price_eur: round2(pinc), price_excl_vat: round2(pex), vat_rate:0.21,
+      zone:state.zone, temp_tier:state.tier, speed:state.speed, time_window:state.window, delivery_date:($("dDate").value||null),
+      weight_kg: parseFloat(state.weight)||null, weight_units: weightUnits(state.weight),
+      details:{ weight_mult: weightMult(state.weight),
+        base_price_excl_vat: (state.zone!==null && state.zone!==4 && PRICES[state.zone] && PRICES[state.zone][state.speed]) ? PRICES[state.zone][state.speed][state.tier] : null,
+        bus_km: state.busKm || null, bus_eur_per_km: isBus ? BUS_EUR_PER_KM : null }
+    };
+  }
+
+  function setSending(){
+    [$("submitBtn"),$("mSubmitBtn")].forEach(function(b){ b.disabled=true; });
+    $("submitBtn").textContent="Sūta\u2026"; $("mSubmitBtn").textContent="Sūta\u2026";
+  }
+
+  /* ---------- Submit ---------- */
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+    var ok=true;
+    var scope = state.method==="locker" ? $("flowLocker") : $("flowCourier");
+    scope.querySelectorAll("input[required], select[required], textarea[required]").forEach(function(inp){
+      if(!validateField(inp)) ok=false;
+    });
+    if(state.method==="courier" && state.speed!=="express" && state.zone!==null && state.zone!==4 && !state.window){
+      $("windowField").classList.add("invalid"); ok=false;
+    }
+    if(!ok){ var fe=scope.querySelector(".field.invalid"); if(fe) fe.scrollIntoView({behavior:"smooth",block:"center"}); return; }
+
+    $("submitErr").style.display="none";
+    var ref = makeRef();
+    var row = buildRow(ref);
+    setSending();
+    try{
+      if(SB_READY){
+        var res = await sb.from("sutijumi").insert(row);
+        if(res.error) throw res.error;
+      } else {
+        console.log("IziPizi sutijums (demo \u2014 Supabase nav konfigurēts):", row);
+      }
+      // Paysera apmaksa — ja ir cena, novirza uz /api/pay
+      if(row.price_eur && row.price_eur > 0){
+        try {
+          var payRes = await fetch("/api/pay", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+              ref: ref,
+              amount_eur: row.price_eur,
+              email: row.sender_email || "",
+              name: row.sender_name || "",
+              phone: row.sender_phone || ""
+            })
+          });
+          var payData = await payRes.json();
+          if(payData.url){
+            window.location.href = payData.url;
+            return;
+          }
+        } catch(payErr){
+          console.warn("Paysera nav pieejams, r\u0101da apstiprin\u0101jumu:", payErr);
+        }
+      }
+      // Fallback: r\u0101da apstiprin\u0101jumu bez apmaksas
+      $("refNo").textContent = ref;
+      form.classList.add("hidden");
+      document.querySelector(".summary-col").classList.add("hidden");
+      $("mobileBar").classList.add("hidden");
+      $("successCard").classList.add("show");
+      $("successCard").scrollIntoView({behavior:"smooth",block:"center"});
+    }catch(err){
+      console.error(err);
+      $("submitErr").textContent="Neizdevās nosūtīt pieteikumu. Pārbaudi savienojumu un mēģini vēlreiz.";
+      $("submitErr").style.display="block";
+      render();
+    }
+  });
+
+  // --- Address autocomplete ---
+  if(typeof izipiziAutocomplete === 'function'){
+    // Sanemeja adrese -> auto-fill pasta indeksu + zona
+    izipiziAutocomplete($("crAddr"), {
+      onSelect: function(p){
+        if(p.postalCode && p.postalCode.length===4){
+          $("crZip").value = p.postalCode;
+          state.zone = detectZone(p.postalCode);
+          buildWindows(); render();
+          // Clear validation error if was invalid
+          var f=$("crZip").closest(".field"); if(f) f.classList.remove("invalid");
+        }
+      }
+    });
+    // Sutitaja adrese (tikai autocomplete, bez papildus logika)
+    izipiziAutocomplete($("csAddr"), { onSelect: function(){} });
+  }
+
+  // init
+  setMethod("locker");
+  buildWindows();
+})();
+</script>
+</body>
+</html>

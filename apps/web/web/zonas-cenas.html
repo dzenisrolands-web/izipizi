@@ -1,0 +1,388 @@
+﻿<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zonas/Cenas | IziPizi</title>
+  <meta name="description" content="IziPizi piegādes zonas un cenas. Standarta un ekspress piegādes ar temperatūras režīmu.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/tabler-icons.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="zonas-cenas">
+<div class="page-head">
+    <div class="page-head-inner">
+      <span class="section-eyebrow">Zonas un cenas</span>
+      <h1>Sūtījumu cena, <span class="accent">laika logi</span> un teritorijas</h1>
+      <p>Cena tiek aprēķināta pēc tālākās zonas. Ievadi pasta indeksu un uzreiz redzi savu zonu un cenu.</p>
+    </div>
+  </div>
+
+  <!-- ============ ZIP PĀRBAUDE ============ -->
+  <section style="padding: 50px 24px 0;">
+    <div class="zip-checker">
+      <h2>Pārbaudi savu zonu</h2>
+      <p>Ievadi adresi vai pasta indeksu — automātiski noteiks tavu zonu un cenu.</p>
+      <div style="margin-bottom:12px">
+        <input type="text" class="input" id="addrInput" placeholder="Sāc rakstīt adresi (piem., Brīvības 100)" autocomplete="off">
+      </div>
+      <div class="zip-form">
+        <input type="text" class="input" id="zipInput" placeholder="Pasta indekss, piem., 1010" maxlength="7" autocomplete="off">
+        <button class="btn btn-primary" id="zipBtn">Pārbaudīt</button>
+      </div>
+      <div class="zip-result empty" id="zipResult">
+        Ievadi pasta indeksu un redzi savu zonu
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ZONU TABULAS ============ -->
+  <section class="section">
+    <div class="section-inner">
+
+      <!-- ZONA 0 -->
+      <div class="zone-block">
+        <div class="zone-block-head">
+          <span class="zone-num">0</span>
+          <div class="zone-name">
+            <h3>Rīgas centrs</h3>
+            <p>Vecrīga, Centrs un tuvākās ielas</p>
+          </div>
+          <div class="zone-indices">
+            <strong>Pasta indeksi:</strong> 1001, 1002, 1003, 1004, 1009, 1010, 1011, 1012, 1013, 1019, 1045, 1046, 1048, 1050
+          </div>
+        </div>
+        <div class="zone-tariffs">
+          <div class="zone-tariff">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Standarta piegāde</span>
+              <span class="zone-tariff-badge">Iepriekšējā dienā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">4,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">6,40 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">7,30 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-clock"></i><strong>Laika logi:</strong> 09:00–12:00, 12:00–18:00, 18:00–22:00</span>
+              <span><i class="ti ti-calendar"></i><strong>Pieteikšana:</strong> līdz 20:00 iepriekšējā dienā</span>
+            </div>
+          </div>
+          <div class="zone-tariff is-express">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Ekspress piegāde</span>
+              <span class="zone-tariff-badge"><i class="ti ti-bolt"></i> 5 stundu laikā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">5,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">7,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">8,50 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-calendar"></i><strong>Darba dienās:</strong> 08:00–16:00</span>
+              <span><i class="ti ti-calendar"></i><strong>Brīvdienās:</strong> 08:00–10:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONA 1 -->
+      <div class="zone-block">
+        <div class="zone-block-head">
+          <span class="zone-num">1</span>
+          <div class="zone-name">
+            <h3>Rīgas mikrorajoni</h3>
+            <p>Imanta, Purvciems, Pļavnieki, Mežciems, Āgenskalns un citi</p>
+          </div>
+          <div class="zone-indices">
+            <strong>Pasta indeksi:</strong> 1005, 1006, 1007, 1014, 1015, 1021, 1023, 1024, 1026, 1029, 1034, 1035, 1039, 1053, 1055, 1057, 1058, 1063, 1064, 1067, 1069, 1073, 1076, 1079, 1082, 1083, 1084, 2101, 2108, 2111, 2112, 2119, 2128, 2130, 2167
+          </div>
+        </div>
+        <div class="zone-tariffs">
+          <div class="zone-tariff">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Standarta piegāde</span>
+              <span class="zone-tariff-badge">Iepriekšējā dienā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">5,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">6,40 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">7,30 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-clock"></i><strong>Laika logi:</strong> 09:00–12:00, 12:00–18:00, 18:00–22:00</span>
+              <span><i class="ti ti-calendar"></i><strong>Pieteikšana:</strong> līdz 20:00 iepriekšējā dienā</span>
+            </div>
+          </div>
+          <div class="zone-tariff is-express">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Ekspress piegāde</span>
+              <span class="zone-tariff-badge"><i class="ti ti-bolt"></i> 5 stundu laikā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">7,00 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">9,00 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">10,00 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-calendar"></i><strong>Darba dienās:</strong> 08:00–16:00</span>
+              <span><i class="ti ti-calendar"></i><strong>Brīvdienās:</strong> 08:00–10:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONA 2 -->
+      <div class="zone-block">
+        <div class="zone-block-head">
+          <span class="zone-num">2</span>
+          <div class="zone-name">
+            <h3>Tuvā Pierīga</h3>
+            <p>Mārupe, Jūrmala, Salaspils, Ulbroka, Ķekava, Babīte</p>
+          </div>
+          <div class="zone-indices">
+            <strong>Pasta indeksi:</strong> 1016, 1030, 2103, 2107, 2114, 2117, 2118, 2121, 2123, 2127, 2137, 2163, 2164, 2166, 2169
+          </div>
+        </div>
+        <div class="zone-tariffs">
+          <div class="zone-tariff">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Standarta piegāde</span>
+              <span class="zone-tariff-badge">Iepriekšējā dienā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">7,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">8,40 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">9,30 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-clock"></i><strong>Laika logi:</strong> 08:00–18:00</span>
+              <span><i class="ti ti-calendar"></i><strong>Pieteikšana:</strong> līdz 20:00 iepriekšējā dienā</span>
+            </div>
+          </div>
+          <div class="zone-tariff is-express">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Ekspress piegāde</span>
+              <span class="zone-tariff-badge"><i class="ti ti-bolt"></i> 5 stundu laikā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">10,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">12,50 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">13,50 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-calendar"></i><strong>Darba dienās:</strong> 08:00–16:00</span>
+              <span><i class="ti ti-calendar"></i><strong>Brīvdienās:</strong> 08:00–10:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONA 3 -->
+      <div class="zone-block">
+        <div class="zone-block-head">
+          <span class="zone-num">3</span>
+          <div class="zone-name">
+            <h3>Tālā Pierīga</h3>
+            <p>Ogre, Sigulda, Jelgava, Tukums</p>
+          </div>
+          <div class="zone-indices">
+            <strong>Pasta indeksi:</strong> 2008, 2010, 2011, 2012, 2015, 2016, 2105, 5001, 5015, 5016, 5041, 5052, 5060, 5070, 5071
+          </div>
+        </div>
+        <div class="zone-tariffs" style="grid-template-columns: 1fr;">
+          <div class="zone-tariff" style="border-right: none;">
+            <div class="zone-tariff-head">
+              <span class="zone-tariff-type">Standarta piegāde</span>
+              <span class="zone-tariff-badge">Iepriekšējā dienā</span>
+            </div>
+            <div class="zone-tariff-rows">
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">Bez termo režīma</span>
+                <span class="zone-tariff-price">8,90 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C VAI −18 °C</span>
+                <span class="zone-tariff-price">9,90 € <small>+ PVN</small></span>
+              </div>
+              <div class="zone-tariff-row">
+                <span class="zone-tariff-label">+2…+6 °C UN −18 °C</span>
+                <span class="zone-tariff-price">10,90 € <small>+ PVN</small></span>
+              </div>
+            </div>
+            <div class="zone-tariff-meta">
+              <span><i class="ti ti-clock"></i><strong>Laika logi:</strong> 08:00–18:00</span>
+              <span><i class="ti ti-info-circle"></i><strong>Ekspress nav pieejams 3. zonā</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZONA 4 -->
+      <div class="zone-block">
+        <div class="zone-block-head">
+          <span class="zone-num" style="background: var(--izp-gray);">4</span>
+          <div class="zone-name">
+            <h3>Pārējā Latvija</h3>
+            <p>Cena pēc individuāla piedāvājuma</p>
+          </div>
+        </div>
+        <div style="padding: 32px; text-align: center;">
+          <p style="font-size: 16px; color: var(--izp-dark); margin-bottom: 8px;">4. zonas teritorijai cena tiek aprēķināta individuāli atbilstoši maršrutam un kravas apjomam.</p>
+          <p style="font-size: 13px; color: var(--izp-gray); margin-bottom: 20px;">Atbilde darba dienās, darba laikā 9:00–17:00</p>
+          <a href="mailto:birojs@izipizi.lv?subject=Cenas%20piedāvājums%20-%204.%20zona" class="btn btn-primary">Saņemt cenas piedāvājumu <i class="ti ti-mail"></i></a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section section-bg-dark">
+    <div class="section-inner">
+      <div class="section-head">
+        <span class="section-eyebrow" style="color: var(--izp-orange);">Svarīgi zināt</span>
+        <h2>Biežāk uzdotie jautājumi</h2>
+      </div>
+
+      <div class="faq">
+        <details class="faq-item" open>
+          <summary>Kā tiek noteikta zona, ja uzkraušana vienā un izkraušana citā?</summary>
+          <p class="faq-item-body">Cena tiek aprēķināta pēc <strong>tālākās</strong> zonas no abām. Piemēram, ja vedam no Rīgas centra (Zona 0) uz Ogri (Zona 3), maksā kā Zona 3.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Vai piegādājat svētdienās un svētku dienās?</summary>
+          <p class="faq-item-body"><strong>Rīgas 0. un 1. zonā brīvdienās un svētku dienās</strong> piegādes tiek nodrošinātas pirmajā pieejamajā laika logā no plkst. 9:00 līdz 12:00, savukārt ekspress piegādes ir pieejamas, ja sūtījums ir pieteikts līdz plkst. 10:00.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Kas ir ekspress piegāde?</summary>
+          <p class="faq-item-body"><strong>Ekspress piegāde tiek izpildīta 5 stundu laikā pēc pieteikuma noformēšanas.</strong> Sūtījumus var pieteikt darba dienās 08:00–16:00, brīvdienās 08:00–10:00.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Vai sūtāt uz 4. zonas teritorijām?</summary>
+          <p class="faq-item-body">Jā, mēs sūtām <strong>visā Latvijā</strong>. 4. zonai cena tiek aprēķināta individuāli — sazinies ar mums uz <a href="mailto:birojs@izipizi.lv" style="color: var(--izp-orange);">birojs@izipizi.lv</a> vai zvani <a href="tel:+37128807456" style="color: var(--izp-orange);">+371 28807456</a>.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-strip">
+    <h2>Zini cenu? Tad sūti!</h2>
+    <p>Piesaki sūtījumu tiešsaistē 3 minūtēs.</p>
+    <a href="pasutit.html" class="btn btn-primary">Pieteikt sūtījumu <i class="ti ti-arrow-right"></i></a>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><img src="izipizi-logo.png" alt="IziPizi"></a>
+        <p>Piegādes ar kontrolētu temperatūras režīmu visā Latvijā.</p>
+      </div>
+      <div>
+        <h4>Pakalpojumi</h4>
+        <a href="pasutit.html">Individuālie sūtījumi</a>
+        <a href="biznesa-konts.html">Biznesa konts</a>
+        <a href="pakomati.html">Termo Pakomāts</a>
+        <a href="https://tirgus.izipizi.lv/">Tirgus</a>
+        <a href="fransize.html">Franšīze</a>
+      </div>
+      <div>
+        <h4>Informācija</h4>
+        <a href="par-izipizi.html">Par izipizi</a>
+        <a href="zonas-cenas.html">Zonas/Cenas</a>
+        <a href="kurjeriem.html">Pelnīt piegādājot</a>
+        <a href="jaunumi.html">Jaunumi</a>
+        <a href="privatuma-politika.html">Privātuma politika</a>
+      </div>
+      <div>
+        <h4>Klientu apkalpošana</h4>
+        <a href="tel:+37128807456">+371 28807456</a>
+        <a href="mailto:birojs@izipizi.lv">birojs@izipizi.lv</a>
+        <div class="footer-social">
+          <a href="https://www.tiktok.com/@izipizi.lv"><i class="ti ti-brand-tiktok"></i></a>
+          <a href="https://www.instagram.com/izipizi.lv/"><i class="ti ti-brand-instagram"></i></a>
+          <a href="https://www.facebook.com/izipizi.lv"><i class="ti ti-brand-facebook"></i></a>
+          <a href="https://t.me/appizipizi"><i class="ti ti-brand-telegram"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2023 SIA IziPizi, "Miltu cehs", Ogresgala pag., Ogres nov., LV-5041</span>
+      <span>+371 28807456 · birojs@izipizi.lv</span>
+    </div>
+  </footer>
+<script src="header.js"></script>
+<script src="address-autocomplete.js"></script>
+<script src="zip-check.js"></script>
+<script>
+  // Pieslēdz autocomplete adreses laukam
+  if(typeof izipiziAutocomplete === 'function'){
+    izipiziAutocomplete(document.getElementById('addrInput'), {
+      onSelect: function(p){
+        if(p.postalCode && p.postalCode.length===4){
+          document.getElementById('zipInput').value = p.postalCode;
+          // Automātiski izsauc pārbaudi
+          document.getElementById('zipBtn').click();
+        }
+      }
+    });
+  }
+</script>
+</body>
+</html>

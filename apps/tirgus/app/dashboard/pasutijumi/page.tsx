@@ -1,0 +1,388 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { ShoppingBag, Clock, CheckCircle, Package, ChevronRight, Loader2, KeyRound, X, Send, AlertTriangle, Percent } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { formatPrice } from "@/lib/utils";
+import { COMMISSION_RATE, COURIER_FEE, commissionForPrice } from "@/lib/commission";
+
+type Order = {
+  id: string;
+  order_number: string;
+  status: string;
+  buyer_name: string;
+  buyer_email: string;
+  buyer_phone: string;
+  delivery_info: { locker_name: string; locker_city: string };
+  items: { title: string; quantity: number; price: number; unit: string; seller_id?: string | null }[];
+  total_cents: number;
+  paid_at: string | null;
+  created_at: string;
+  locker_code: string | null;
+};
+
+const statusMap: Record<string, { label: string; cls: string }> = {
+  pending:    { label: "Gaida apmaksu", cls: "bg-amber-100 text-amber-700" },
+  paid:       { label: "Apmaksāts",     cls: "bg-green-100 text-green-700" },
+  processing: { label: "Apstrādē",      cls: "bg-blue-100 text-blue-700" },
+  shipped:    { label: "Nosūtīts",      cls: "bg-purple-100 text-purple-700" },
+  delivered:  { label: "Piegādāts",     cls: "bg-gray-100 text-gray-600" },
+  cancelled:  { label: "Atcelts",       cls: "bg-red-100 text-red-600" },
+  awaiting:   { label: "Gaida apmaksu", cls: "bg-amber-100 text-amber-700" },
+};
+
+export default function DashboardPasutijumiPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [deliveryMode, setDeliveryMode] = useState<"locker" | "courier">("locker");
+  const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [updating, setUpdating] = useState<string | null>(null);
+  const [shipDialog, setShipDialog] = useState<Order | null>(null);
+  const [lockerCodeDraft, setLockerCodeDraft] = useState("");
+  const [sellerId, setSellerId] = useState("");
+
+  const NEXT_STATUS: Record<string, { label: string; next: string }> = {
+    paid:       { label: "Apstiprināt pasūtījumu", next: "processing" },
+    processing: { label: "Atzīmēt kā nosūtītu",   next: "shipped" },
+    shipped:    { label: "Atzīmēt kā saņemtu",     next: "delivered" },
+  };
+
+  async function restoreOrder(orderId: string) {
+    setUpdating(orderId);
+    await supabase.from("orders").update({ status: "paid" }).eq("id", orderId);
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "paid" } : o));
+    setUpdating(null);
+  }
+
+  async function notifyBuyer(orderId: string, status: string) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) return;
+      await fetch("/api/notify/order-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ orderId, status }),
+      });
+    } catch (e) {
+      console.error("notify failed", e);
+    }
+  }
+
+  async function advanceStatus(orderId: string, nextStatus: string) {
+    // If marking as shipped, require locker code first
+    if (nextStatus === "shipped") {
+      const order = orders.find((o) => o.id === orderId);
+      if (order) {
+        setShipDialog(order);
+        setLockerCodeDraft(order.locker_code ?? "");
+        return;
+      }
+    }
+    setUpdating(orderId);
+    await supabase.from("orders").update({ status: nextStatus }).eq("id", orderId);
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: nextStatus } : o));
+    notifyBuyer(orderId, nextStatus); // fire and forget
+    setUpdating(null);
+  }
+
+  async function confirmShip() {
+    if (!shipDialog) return;
+    const code = lockerCodeDraft.trim();
+    if (!code) return;
+    setUpdating(shipDialog.id);
+    await supabase
+      .from("orders")
+      .update({ status: "shipped", locker_code: code })
+      .eq("id", shipDialog.id);
+    setOrders((prev) =>
+      prev.map((o) => (o.id === shipDialog.id ? { ...o, status: "shipped", locker_code: code } : o)),
+    );
+    notifyBuyer(shipDialog.id, "shipped"); // fire and forget
+    setShipDialog(null);
+    setLockerCodeDraft("");
+    setUpdating(null);
+  }
+
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data: seller } = await supabase
+        .from("sellers").select("id, delivery_mode").eq("user_id", user.id).single();
+      if (seller?.delivery_mode === "courier") setDeliveryMode("courier");
+      if (!seller) { setLoading(false); return; }
+      setSellerId(seller.id);
+      const { data } = await supabase
+        .from("orders").select("*")
+        .contains("seller_ids", [seller.id])
+        .or("payment_status.eq.paid,status.in.(paid,processing,shipped,delivered,cancelled)")
+        .order("created_at", { ascending: false });
+      setOrders(data ?? []);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  if (loading) return (
+    <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900" />
+    </div>
+  );
+
+  // Orders waiting for the seller to flip paid → processing.
+  // Auto-cancel kicks in 24 h after paid_at (see /api/cron/order-reminders).
+  const pendingConfirm = orders.filter((o) => o.status === "paid");
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-10">
+      <div className="mb-6">
+        <h1 className="text-2xl font-extrabold text-gray-900">Pasūtījumi</h1>
+        <p className="mt-0.5 text-sm text-gray-500">{orders.length} kopā</p>
+      </div>
+
+      {pendingConfirm.length > 0 && (
+        <div className="mb-5 rounded-2xl border-2 border-red-300 bg-gradient-to-br from-red-50 to-white p-5 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-200 text-red-700">
+              <AlertTriangle size={20} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-red-900">
+                {pendingConfirm.length} {pendingConfirm.length === 1 ? "pasūtījums gaida" : "pasūtījumi gaida"} apstiprinājumu
+              </p>
+              <p className="mt-0.5 text-sm text-red-800">
+                Apstiprini katru pasūtījumu pēc iespējas ātrāk. <strong>Ja netiek apstiprināts 24h laikā, pasūtījums tiks automātiski atcelts</strong> un nauda atgriezta pircējam.
+              </p>
+            </div>
+          </div>
+          <ul className="mt-3 space-y-1.5">
+            {pendingConfirm.map((o) => {
+              const paidAt = o.paid_at ? new Date(o.paid_at).getTime() : Date.now();
+              const hoursLeft = Math.max(0, 24 - (Date.now() - paidAt) / 3_600_000);
+              const isUrgent = hoursLeft < 6;
+              return (
+                <li key={o.id}>
+                  <button
+                    onClick={() => setExpanded(o.id)}
+                    className="flex w-full items-center gap-3 rounded-xl bg-white px-3 py-2 text-left ring-1 ring-red-200 hover:ring-red-400 transition"
+                  >
+                    <span className="font-mono text-xs font-bold text-red-700">{o.order_number}</span>
+                    <span className="flex-1 truncate text-sm text-gray-700">{o.buyer_name}</span>
+                    <span className={`shrink-0 text-xs font-semibold ${isUrgent ? "text-red-600" : "text-amber-700"}`}>
+                      {hoursLeft < 1
+                        ? `${Math.round(hoursLeft * 60)} min līdz atcelšanai`
+                        : `${Math.round(hoursLeft)}h līdz atcelšanai`}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+
+      {orders.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-gray-200 bg-white p-16 text-center">
+          <ShoppingBag size={40} className="mx-auto text-gray-300" />
+          <p className="mt-3 font-semibold text-gray-900">Vēl nav pasūtījumu</p>
+          <p className="mt-1 text-sm text-gray-400">Kad pircēji pasūtīs tavus produktus, tie parādīsies šeit</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {orders.map((order) => {
+            const st = statusMap[order.status] ?? { label: order.status, cls: "bg-gray-100 text-gray-600" };
+            const isOpen = expanded === order.id;
+            return (
+              <div key={order.id} className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+                <button
+                  onClick={() => setExpanded(isOpen ? null : order.id)}
+                  className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50 transition"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100">
+                    <Package size={16} className="text-gray-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-gray-900">{order.order_number}</p>
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${st.cls}`}>{st.label}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {order.buyer_name} · {new Date(order.created_at).toLocaleDateString("lv-LV")}
+                      {order.delivery_info?.locker_city && ` · ${order.delivery_info.locker_city}`}
+                    </p>
+                  </div>
+                  <p className="shrink-0 font-bold text-gray-900">{formatPrice(order.total_cents / 100)}</p>
+                </button>
+
+                {isOpen && (
+                  <div className="border-t border-gray-100 px-5 py-4 space-y-3 bg-gray-50">
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Pircējs</p>
+                        <p className="font-medium text-gray-900">{order.buyer_name}</p>
+                        <p className="text-gray-500">{order.buyer_email}</p>
+                        <p className="text-gray-500">{order.buyer_phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-1">Piegāde</p>
+                        <p className="font-medium text-gray-900">{order.delivery_info?.locker_name}</p>
+                        <p className="text-gray-500">{order.delivery_info?.locker_city}</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">Preces</p>
+                      <div className="space-y-1">
+                        {order.items.map((item, i) => (
+                          <div key={i} className="flex justify-between text-sm">
+                            <span className="text-gray-700">{item.title} × {item.quantity}</span>
+                            <span className="font-medium text-gray-900">{formatPrice(item.price * item.quantity)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Commission breakdown — only THIS seller's items */}
+                    {(() => {
+                      // Filter items to show only products belonging to this seller
+                      const myItems = sellerId
+                        ? order.items.filter((item) => item.seller_id === sellerId)
+                        : order.items; // fallback: show all if sellerId unknown
+                      const mySubtotal = myItems.reduce((s, it) => s + it.price * it.quantity, 0);
+                      const myCommission = myItems.reduce((s, it) => s + commissionForPrice(it.price * it.quantity), 0);
+                      const myNet = Math.round((mySubtotal - myCommission - (deliveryMode === "courier" ? COURIER_FEE : 0)) * 100) / 100;
+                      return (
+                        <div className="rounded-xl bg-gray-100/60 px-4 py-3 space-y-1.5">
+                          <p className="flex items-center gap-1.5 text-xs text-gray-400 font-semibold uppercase tracking-wider">
+                            <Percent size={10} /> Izmaksu sīkumsājums
+                          </p>
+                          {/* Commission per item */}
+                          {myItems.map((item, i) => {
+                            const lineTotal = item.price * item.quantity;
+                            const lineComm = commissionForPrice(lineTotal);
+                            return (
+                              <div key={i} className="flex items-center justify-between text-xs">
+                                <span className="text-gray-500 truncate flex-1 mr-2">
+                                  {item.title} ×{item.quantity}
+                                </span>
+                                <span className="text-amber-600 shrink-0">−{formatPrice(lineComm)} ({COMMISSION_RATE}%)</span>
+                              </div>
+                            );
+                          })}
+                          {/* Courier fee — 1x per order regardless of item count */}
+                          {deliveryMode === "courier" && (
+                            <div className="flex items-center justify-between text-xs border-t border-gray-200 pt-1.5">
+                              <span className="text-gray-500">Kurjera savakšana <span className="text-gray-400">(1× par pasūtījumu)</span></span>
+                              <span className="text-amber-600">−{formatPrice(COURIER_FEE)}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between border-t border-gray-200 pt-1.5 text-sm">
+                            <span className="font-semibold text-gray-700">Tu saņemsi</span>
+                            <span className="font-bold text-green-700">{formatPrice(myNet)}</span>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                        {order.paid_at
+                          ? <><CheckCircle size={12} className="text-green-500" /> Apmaksāts {new Date(order.paid_at).toLocaleDateString("lv-LV")}</>
+                          : <><Clock size={12} /> Gaida apmaksu</>
+                        }
+                      </div>
+                      <p className="font-extrabold text-gray-900">{formatPrice(order.total_cents / 100)}</p>
+                    </div>
+                    {NEXT_STATUS[order.status] && (
+                      <button
+                        onClick={() => advanceStatus(order.id, NEXT_STATUS[order.status].next)}
+                        disabled={updating === order.id}
+                        className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#192635] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#243647] transition disabled:opacity-60"
+                      >
+                        {updating === order.id ? <Loader2 size={14} className="animate-spin" /> : <ChevronRight size={14} />}
+                        {NEXT_STATUS[order.status].label}
+                      </button>
+                    )}
+                    {order.status === "cancelled" && (
+                      <div className="mt-2 space-y-2">
+                        <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800">
+                          ⚠ Pasūtījums tika automātiski atcelts (24h apstiprināšanas laiks). Ja pasūtījums ir apmaksāts — atjauno to.
+                        </div>
+                        <button
+                          onClick={() => restoreOrder(order.id)}
+                          disabled={updating === order.id}
+                          className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition disabled:opacity-60"
+                        >
+                          {updating === order.id ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                          Atjaunot pasūtījumu (apstiprināt)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Locker code dialog */}
+      {shipDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100">
+                  <KeyRound size={16} className="text-brand-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-gray-900">Atzīmēt kā ievietotu pārtikas pakomātā</h3>
+                  <p className="text-xs text-gray-500">{shipDialog.order_number}</p>
+                </div>
+              </div>
+              <button onClick={() => setShipDialog(null)}
+                className="text-gray-400 hover:text-gray-700">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+              <p className="font-semibold">Saņemšanas vieta:</p>
+              <p className="text-xs">{shipDialog.delivery_info?.locker_city} — {shipDialog.delivery_info?.locker_name}</p>
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700">PIN kods pārtikas pakomātam *</label>
+              <p className="mt-1 text-xs text-gray-500">
+                Pircējs saņems push paziņojumu ar šo kodu, lai izņemtu pasūtījumu.
+              </p>
+              <input
+                value={lockerCodeDraft}
+                onChange={(e) => setLockerCodeDraft(e.target.value.replace(/\s/g, ""))}
+                placeholder="123456"
+                inputMode="numeric"
+                className="input mt-2 w-full font-mono text-lg tracking-widest text-center"
+                autoFocus
+              />
+            </div>
+
+            <div className="mt-5 flex gap-2">
+              <button onClick={() => setShipDialog(null)}
+                className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                Atcelt
+              </button>
+              <button onClick={confirmShip}
+                disabled={!lockerCodeDraft.trim() || updating === shipDialog.id}
+                className="btn-primary flex flex-1 items-center justify-center gap-2 px-4 py-2.5 text-sm disabled:opacity-50">
+                {updating === shipDialog.id
+                  ? <Loader2 size={14} className="animate-spin" />
+                  : <Send size={14} />}
+                Saglabāt un paziņot
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

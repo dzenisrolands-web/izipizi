@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/expire-drops",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/generate-invoices",
+      "schedule": "0 3 1,16 * *"
+    },
+    {
+      "path": "/api/cron/order-reminders",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}
