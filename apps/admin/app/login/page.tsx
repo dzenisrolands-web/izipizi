@@ -1,4 +1,4 @@
-﻿export default function LoginPage() {
+export default function LoginPage() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, color: '#192635' }}>Pieslēgties — Admin konsole</h1>

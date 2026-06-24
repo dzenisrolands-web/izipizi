@@ -6,7 +6,7 @@ import type { UserRole } from "./index";
  * Creates a Next.js middleware that gates routes by role.
  * Public paths (login, auth callback) are always accessible.
  *
- * Usage in apps/*/middleware.ts:
+ * Usage in each app's middleware.ts:
  *   import { withAuth } from "@izipizi/auth/middleware";
  *   export default withAuth("business");
  *   export const config = { matcher: ["/((?!_next|favicon|api).*)"] };

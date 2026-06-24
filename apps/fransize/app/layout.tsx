@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Franšīzes pārlūks | IziPizi" };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

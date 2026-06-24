@@ -1,4 +1,4 @@
-﻿export default function Home() {
+export default function Home() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
       <div style={{ fontSize: 48, fontWeight: 800, background: 'linear-gradient(90deg, #53F3A4, #AD47FF)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
