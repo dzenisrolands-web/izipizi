@@ -32,6 +32,7 @@ export type Contact = {
 export type LockerReference = {
   namespace: string;
   code: string;
+  label?: string | null;
   marketplaceCode: string | null;
   availability: "known" | "closed_for_new_work" | "unmapped";
 };
@@ -75,6 +76,10 @@ export type MoneyObservation = {
   rawGross?: string | number | null;
   rawNet?: string | number | null;
   sourcePath?: string;
+  sellerId?: string | null;
+  tariffVersion?: string | null;
+  zonePolicy?: string | null;
+  discountTreatment?: "before_order_discount" | "after_recorded_discount" | "unknown";
 };
 
 export type SourceItem = {
@@ -114,6 +119,9 @@ export type CanonicalIntake = {
   source: SourceReference;
   sourceStatus: string | null;
   sourceCreatedAt?: string | null;
+  description?: string | null;
+  notes?: string | null;
+  contactEmail?: string | null;
   method: "locker" | "courier" | "express" | "bus" | "unknown";
   client: {
     namespace: string;
