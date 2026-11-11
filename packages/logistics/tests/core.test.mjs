@@ -13,7 +13,7 @@ test("EUR source decimals preserve cents exactly and never manufacture zero from
   }
   assert.equal(parseEuroCents(null), null);
   assert.equal(parseEuroCents(undefined), null);
-  for (const invalid of ["", " ", "3,00", "-1", "1e2", "03", "1.005", {}, NaN, Infinity, -1, 1.005, Number.MAX_VALUE]) {
+  for (const invalid of ["", " ", "3,00", "-1", "1e2", "03", "1.005", {}, NaN, Infinity, -1, 1.005, 3.000000001, 0.1 + 0.2, Number.MAX_VALUE]) {
     assert.throws(() => parseEuroCents(invalid));
   }
   assert.equal(parseEuroCents("90071992547409.91"), Number.MAX_SAFE_INTEGER);
@@ -28,6 +28,8 @@ test("recorded gross/net/tax and source channels remain distinct", () => {
   assert.equal(observedMoney("marketplace_delivery", null).grossCents, null);
   assert.throws(() => observedMoney("legacy_logistics", 300, 300, 63));
   assert.throws(() => observedMoney("legacy_logistics", 300, 400));
+  assert.throws(() => observedMoney("marketplace_delivery", 100, null, 200));
+  assert.throws(() => observedMoney("marketplace_delivery", null, Number.MAX_SAFE_INTEGER, 1));
 });
 
 test("full IDs remain namespaced; label/form versions do not duplicate the same legacy row", () => {
@@ -35,6 +37,8 @@ test("full IDs remain namespaced; label/form versions do not duplicate the same 
   const a = sourceReference("legacy-form-v1", id, "IZI-TEST");
   const b = sourceReference("legacy-label-v2", id);
   assert.equal(a.key, b.key);
+  const mixedCase = "A1111111-1111-4111-8111-111111111111";
+  assert.equal(sourceReference("website-neon-v1", mixedCase).key, sourceReference("website-neon-v1", mixedCase.toLowerCase()).key);
   assert.notEqual(a.key, sourceReference("website-neon-v1", id).key);
   assert.notEqual(a.key, sourceReference("marketplace-order-v1", id).key);
   assert.equal(sourceReference("legacy-form-v1", "IZI-TEST", "IZI-TEST", "reference_only").idKind, "reference_only");

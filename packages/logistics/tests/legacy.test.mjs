@@ -11,6 +11,14 @@ const fixture = (changes = {}) => ({
   locker_from: "agenskalns", locker_to: "brivibas", locker_same: false, size: "M",
   price_eur: 3, price_excl_vat: 2.48, vat_rate: 0.21, ...changes,
 });
+
+test("missing contact facts stay explicit blocking review without inferring account details", () => {
+  const value = intake(adaptLegacyFormV1(fixture({ sender_phone: null, recipient_name: null })));
+  assert.equal(value.pickup.contact.phone, null);
+  assert.equal(value.dropoff.contact.name, null);
+  assert.equal(value.issues.filter(entry => entry.code === "missing_contact" && entry.severity === "blocking").length, 2);
+  assert.equal(value.client, null);
+});
 const courier = (changes = {}) => fixture({
   method: "courier", sender_address: "Synthetic pickup 1", recipient_address: "Synthetic dropoff 2",
   recipient_zip: "LV-1010", temp_tier: 1, zone: 0, speed: "standard",

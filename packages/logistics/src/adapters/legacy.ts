@@ -95,8 +95,10 @@ export function nonnegativeNumber(value: unknown): number | null {
   return value;
 }
 
-function contact(row: Record<string, unknown>, prefix: string): Contact {
-  return { name: optionalText(row[`${prefix}_name`]), phone: optionalText(row[`${prefix}_phone`]), email: optionalText(row[`${prefix}_email`]) };
+function contact(row: Record<string, unknown>, prefix: string, issues: ReviewIssue[]): Contact {
+  const result = { name: optionalText(row[`${prefix}_name`]), phone: optionalText(row[`${prefix}_phone`]), email: optionalText(row[`${prefix}_email`]) };
+  if (!result.name || !result.phone) issues.push(issue("missing_contact", prefix, "Source contact name or phone is missing.", "blocking"));
+  return result;
 }
 
 function temperatureV2(value: unknown, issues: ReviewIssue[]): Temperature {
@@ -128,7 +130,7 @@ function legacy(record: unknown, schema: "legacy-form-v1" | "legacy-label-v2"): 
       return invalid(schema, "invalid_method", v1 ? "method" : "delivery_type", "Unsupported or missing source method.");
     }
     const method = rawMethod as "locker" | "courier" | "bus";
-    const sender = contact(row, "sender"), recipient = contact(row, "recipient");
+    const sender = contact(row, "sender", issues), recipient = contact(row, "recipient", issues);
     const pickup = method === "locker"
       ? lockerEndpoint(schema, row[v1 ? "locker_from" : "from_locker"], sender, issues, "pickup")
       : v1 ? addressEndpoint(row.sender_address, null, null, sender, issues, "pickup")

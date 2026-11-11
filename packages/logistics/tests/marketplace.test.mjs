@@ -80,6 +80,24 @@ test("full UUID, human reference, nullable buyer and source status remain distin
   assert.equal(intake(guest).client, null);
 });
 
+test("recorded order components reconcile without replacing historical amounts or missing discount", () => {
+  assert.ok(!intake().issues.some(entry => entry.code === "ORDER_COMPONENTS_CONFLICT"));
+  const row = fixture(); row.total_cents = 1; row.total_amount = 0.01;
+  const conflict = intake(row);
+  assert.ok(conflict.issues.some(entry => entry.code === "ORDER_COMPONENTS_CONFLICT" && entry.severity === "blocking"));
+  assert.equal(conflict.money.find(entry => entry.scope === "marketplace_order_total").grossCents, 1);
+  const discounted = fixture(); discounted.promo_discount_cents = 300; discounted.total_cents = 2474; discounted.total_amount = 24.74;
+  assert.ok(!intake(discounted).issues.some(entry => entry.code === "ORDER_COMPONENTS_CONFLICT"));
+  row.promo_discount_cents = 3000;
+  assert.ok(intake(row).issues.some(entry => entry.code === "DISCOUNT_EXCEEDS_COMPONENTS" && entry.severity === "blocking"));
+  delete row.promo_discount_cents;
+  assert.ok(!intake(row).issues.some(entry => entry.code === "ORDER_COMPONENTS_CONFLICT"));
+  const unsafe = fixture();
+  delete unsafe.total_amount;
+  unsafe.items[0].price = "90071992547409.91"; unsafe.items[0].quantity = 1;
+  assert.ok(hasIssue(adaptMarketplaceOrderV1(unsafe), "UNSAFE_ORDER_COMPONENTS"));
+});
+
 test("express, explicit address details and schedule are preserved without timezone invention", () => {
   const result = intake();
   assert.equal(result.method, "express");
@@ -201,7 +219,18 @@ test("known source locker alias and closed/unmapped lockers never authorize new 
     assert.equal(result.dropoff.locker.code, id);
     assert.equal(result.dropoff.locker.availability, availability);
     assert.equal(result.dispatchAuthorized, false);
+    if (availability === "closed_for_new_work") {
+      assert.ok(result.issues.some(entry => entry.code === "DROPOFF_LOCKER_REVIEW" && entry.severity === "blocking"));
+    }
   }
+});
+
+test("closed historical pickup remains present with a blocking review issue", () => {
+  const sender = snapshot();
+  sender.pickup = { kind: "locker", contact: sender.pickup.contact, address: null, locker: { namespace: "marketplace-order-v1", code: "tukums" } };
+  const result = intake(fixture(), [sender]);
+  assert.equal(result.parts[0].pickup.locker.code, "tukums");
+  assert.ok(result.issues.some(entry => entry.code === "PICKUP_LOCKER_REVIEW" && entry.severity === "blocking"));
 });
 
 test("duplicate/conflicting seller snapshots select no pickup; absent phone is not seller email", () => {

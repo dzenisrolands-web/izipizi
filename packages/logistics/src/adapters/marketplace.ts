@@ -81,7 +81,8 @@ function snapshotPickup(snapshot: Row | undefined, issues: ReviewIssue[], path: 
     const locker = namespace ? lockerReference(namespace, pickup.locker.code) : null;
     if (locker) {
       if (locker.availability !== "known") issues.push(issue("PICKUP_LOCKER_REVIEW", `${path}.locker`,
-        "Pickup locker is closed or outside the known source namespace."));
+        "Pickup locker is closed or outside the known source namespace.",
+        locker.availability === "closed_for_new_work" ? "blocking" : "review"));
       return { kind: "locker", contact: recipient, address: null, locker: { ...locker, label: text(pickup.locker.label, 500) } };
     }
   }
@@ -97,7 +98,8 @@ function dropoff(row: Row, info: Row, method: string, issues: ReviewIssue[]): En
     const locker = lockerReference(SCHEMA, info.locker_id);
     if (locker) {
       if (locker.availability !== "known") issues.push(issue("DROPOFF_LOCKER_REVIEW", "delivery_info.locker_id",
-        "Destination locker is closed or unmapped."));
+        "Destination locker is closed or unmapped.",
+        locker.availability === "closed_for_new_work" ? "blocking" : "review"));
       return { kind: "locker", contact: recipient, address: null, locker };
     }
   } else if (method === "courier" || method === "express") {
@@ -143,7 +145,11 @@ export function adaptMarketplaceOrderV1(
   try { source = sourceReference(SCHEMA, record.id, record.order_number); }
   catch { return invalid(SCHEMA, "INVALID_SOURCE_IDENTITY", "id", "A full order UUID and valid human reference are required."); }
   const issues: ReviewIssue[] = [];
-  const bad = (code: string, path: string, message: string) => issues.push(issue(code, path, message, "blocking"));
+  let malformed = false;
+  const bad = (code: string, path: string, message: string) => {
+    malformed = true;
+    issues.push(issue(code, path, message, "blocking"));
+  };
   if (!source.reference) issues.push(issue("ORDER_REFERENCE_UNRESOLVED", "order_number", "Human order reference is missing."));
   const info = isRecord(record.delivery_info) ? record.delivery_info : {};
   if (!isRecord(record.delivery_info)) issues.push(issue("DELIVERY_INFO_UNRESOLVED", "delivery_info", "Delivery metadata is missing."));
@@ -238,6 +244,22 @@ export function adaptMarketplaceOrderV1(
     }
   } catch {
     bad("INVALID_MONEY", "money", "Source currency or money is invalid, negative, unsafe or has excess decimal precision.");
+  }
+  // Reconcile recorded components only when complete. Never apply today's tariff,
+  // assume a missing discount is zero, or sum overlapping aggregate/seller fees.
+  const orderTotal = money.find(entry => entry.scope === "marketplace_order_total")?.grossCents;
+  const deliveryTotal = money.find(entry => entry.scope === "marketplace_delivery")?.grossCents;
+  if (!malformed && owned.length && owned.every(entry => entry.goods !== null) && deliveryTotal != null) {
+    const goodsTotal = owned.reduce((sum, entry) => sum + entry.goods!.grossCents!, 0);
+    const preDiscount = goodsTotal + deliveryTotal;
+    if (!Number.isSafeInteger(goodsTotal) || !Number.isSafeInteger(preDiscount)) {
+      bad("UNSAFE_ORDER_COMPONENTS", "money", "Combined recorded order components exceed safe integer cents.");
+    } else if (discount !== null) {
+      if (discount > preDiscount) issues.push(issue("DISCOUNT_EXCEEDS_COMPONENTS", "promo_discount_cents",
+        "Recorded discount exceeds recorded goods and delivery; observations were not repaired.", "blocking"));
+      else if (orderTotal != null && preDiscount - discount !== orderTotal) issues.push(issue("ORDER_COMPONENTS_CONFLICT", "total_cents",
+        "Recorded goods, delivery and discount do not reconcile to the recorded order total.", "blocking"));
+    }
   }
   const itemSellerIds = new Set(owned.map(entry => entry.sellerId).filter((id): id is string => id !== null));
   if (Array.isArray(record.seller_ids) && (aggregateIds.size !== itemSellerIds.size ||
@@ -338,7 +360,7 @@ export function adaptMarketplaceOrderV1(
     const right = `${b.path}/${b.code}/${b.message}`;
     return left < right ? -1 : left > right ? 1 : 0;
   });
-  if (issues.some(entry => entry.severity === "blocking")) return { ok: false, schema: SCHEMA, issues };
+  if (malformed) return { ok: false, schema: SCHEMA, issues };
   return {
     ok: true,
     intake: createIntake({

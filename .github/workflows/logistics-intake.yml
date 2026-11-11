@@ -1,0 +1,34 @@
+name: Logistics intake (no production connections)
+on:
+  pull_request:
+    paths:
+      - "packages/logistics/**"
+      - "packages/config/tsconfig/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".github/workflows/logistics-intake.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/logistics/**"
+      - "packages/config/tsconfig/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - ".github/workflows/logistics-intake.yml"
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: corepack enable
+      - run: corepack pnpm install --filter @izipizi/logistics --frozen-lockfile --ignore-scripts
+      - run: corepack pnpm logistics:check
+      - run: corepack pnpm logistics:example

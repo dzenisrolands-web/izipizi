@@ -5,6 +5,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "logistics:check": "pnpm --filter @izipizi/logistics test && pnpm --filter @izipizi/logistics typecheck && pnpm --filter @izipizi/logistics build",
+    "logistics:example": "pnpm --filter @izipizi/logistics example",
     "clean": "turbo run clean",
     "db:types": "supabase gen types typescript --project-id wepyslyqcxpszobfkzzs > packages/db/src/database.types.ts"
   },

@@ -49,7 +49,7 @@ export function sourceReference(
   // Both legacy schema versions describe one underlying sutijumi table.
   const system = systems[schema];
   return { system, schema, id, idKind, reference: humanReference,
-    key: `${system}/${idKind}/${encodeURIComponent(id)}` };
+    key: `${system}/${idKind}/${encodeURIComponent(isUuid(id) ? id.toLowerCase() : id)}` };
 }
 
 export function parseIntegerCents(value: unknown): number | null {
@@ -61,10 +61,8 @@ export function parseIntegerCents(value: unknown): number | null {
 export function parseEuroCents(value: unknown): number | null {
   if (value === null || value === undefined) return null;
   if (typeof value === "number") {
-    const cents = Math.round(value * 100);
-    if (!Number.isFinite(value) || value < 0 || !Number.isSafeInteger(cents) ||
-        Math.abs(value * 100 - cents) > 0.000001) throw new TypeError("Invalid EUR amount");
-    return cents;
+    if (!Number.isFinite(value) || value < 0) throw new TypeError("Invalid EUR amount");
+    return parseEuroCents(String(value));
   }
   if (typeof value !== "string" || value.length > 32) throw new TypeError("Invalid EUR decimal");
   const match = /^(0|[1-9][0-9]*)(?:\.([0-9]{1,2}))?$/.exec(value);
@@ -80,6 +78,8 @@ export function observedMoney(
 ): MoneyObservation {
   parseIntegerCents(grossCents); parseIntegerCents(netCents); parseIntegerCents(vatCents);
   if (grossCents !== null && netCents !== null && netCents > grossCents) throw new TypeError("Inconsistent observed money");
+  if (grossCents !== null && vatCents !== null && vatCents > grossCents) throw new TypeError("Inconsistent observed money");
+  if (netCents !== null && vatCents !== null && !Number.isSafeInteger(netCents + vatCents)) throw new TypeError("Unsafe observed tax split");
   if (grossCents !== null && netCents !== null && vatCents !== null &&
       netCents + vatCents !== grossCents) throw new TypeError("Inconsistent observed money");
   return { scope, currency: "EUR", grossCents, netCents, vatCents, verification: "unverified_source" };

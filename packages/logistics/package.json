@@ -11,7 +11,8 @@
   "scripts": {
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "typecheck": "tsc --noEmit",
-    "build": "tsc --noEmit"
+    "build": "tsc --noEmit",
+    "example": "node --experimental-strip-types examples/review.mjs"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

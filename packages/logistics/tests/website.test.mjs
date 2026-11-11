@@ -9,6 +9,19 @@ const endpoint = (changes = {}) => ({
   kind: "address", name: "Synthetic Contact", phone: "+37120000003", email: "contact@synthetic.invalid",
   address: "Synthetic street 1", city: "Synthetic City", postalCode: "LV-1010", ...changes,
 });
+
+test("missing required Neon contacts and structured address fields never appear clean", () => {
+  const value = intake(adaptWebsiteNeonV1(fixture({
+    sender: endpoint({ name: null, phone: null, city: null }),
+    recipient: endpoint({ phone: null, postalCode: null }),
+  })));
+  for (const code of ["missing_contact", "incomplete_address"]) {
+    assert.equal(value.issues.filter(entry => entry.code === code && entry.severity === "blocking").length, 2);
+  }
+  assert.equal(value.pickup.contact.phone, null);
+  assert.equal(value.dropoff.address.postalCode, null);
+  assert.equal(value.dispatchAuthorized, false);
+});
 const fixture = (changes = {}) => ({
   id, status: "new", method: "standard", zone: "z0", temp_mode: "none", compartment_size: null,
   time_window: "09:00–12:00", price_net: "4.50", price_gross: "5.45", vat_rate: "0.21",

@@ -7,8 +7,12 @@ const SCHEMA = "website-neon-v1" as const;
 function endpoint(value: unknown, issues: ReviewIssue[], path: string): Endpoint {
   if (!isRecord(value)) throw new TypeError("Missing endpoint object");
   const contact: Contact = { name: optionalText(value.name), phone: optionalText(value.phone), email: optionalText(value.email) };
+  if (!contact.name || !contact.phone) issues.push(issue("missing_contact", `${path}.contact`, "Source contact name or phone is missing.", "blocking"));
   if (value.kind === "locker") return lockerEndpoint(SCHEMA, value.lockerId, contact, issues, path);
   if (value.kind !== "address") throw new TypeError("Unknown endpoint kind");
+  if (!optionalText(value.city) || !optionalText(value.postalCode)) {
+    issues.push(issue("incomplete_address", `${path}.address`, "Website source city or postal code is missing.", "blocking"));
+  }
   return addressEndpoint(value.address, value.city, value.postalCode, contact, issues, path);
 }
 
