@@ -74,6 +74,7 @@ export type MoneyObservation = {
   verification: "unverified_source";
   rawGross?: string | number | null;
   rawNet?: string | number | null;
+  sourcePath?: string;
 };
 
 export type SourceItem = {
@@ -94,6 +95,10 @@ export type FulfillmentPart = {
   items: SourceItem[];
   temperature: Temperature;
   deliveryCharge: MoneyObservation | null;
+  senderConfirmation?: {
+    recordedAt: string | null;
+    verification: "unverified_source";
+  } | null;
 };
 
 export type MarketplaceSellerSnapshot = {
@@ -108,6 +113,7 @@ export type CanonicalIntake = {
   version: typeof INTAKE_VERSION;
   source: SourceReference;
   sourceStatus: string | null;
+  sourceCreatedAt?: string | null;
   method: "locker" | "courier" | "express" | "bus" | "unknown";
   client: {
     namespace: string;
@@ -124,6 +130,21 @@ export type CanonicalIntake = {
     reportedStatus: "paid" | "pending" | "refunded" | "unknown";
     raw: string | null;
     verified: false;
+    provider?: string | null;
+    sessionReference?: string | null;
+  };
+  observations?: {
+    sourceZone?: string | number | null;
+    sourceSpeed?: string | null;
+    sourceVatRate?: string | number | null;
+    sameLocker?: boolean | null;
+    weightUnits?: number | null;
+    orderDiscountCents?: number | null;
+    routeEstimate?: {
+      kilometers: number | null;
+      basis: "source_postcode_centroid_estimate";
+      rateCentsPerKm: number | null;
+    } | null;
   };
   parts: FulfillmentPart[];
   issues: ReviewIssue[];
