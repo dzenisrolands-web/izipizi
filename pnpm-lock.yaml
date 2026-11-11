@@ -277,6 +277,12 @@ importers:
         specifier: ^2.104.0
         version: 2.108.2
 
+  packages/logistics:
+    devDependencies:
+      typescript:
+        specifier: ^5.7.0
+        version: 5.9.3
+
   packages/ui: {}
 
 packages:
